@@ -699,7 +699,7 @@ function buildTimelineItem(entry, isNext, today) {
               <path id="hprFill" class="hpr-fill" d="M26 10 C 8 35, 44 50, 26 70 C 8 90, 44 105, 26 122"/>
               <circle class="hpr-enddot" cx="26" cy="122" r="7"/>
               <image id="hprMascot" class="hpr-mascot" width="30" height="30" x="11" y="-5"
-                     href="characters/food-icon.png" xlink:href="characters/food-icon.png"/>
+                     href="characters/food-icon.png"/>
             </svg>
           </div>
           <div class="hero-progress-text">
@@ -755,9 +755,7 @@ function init() {
     `;
     const hprMascot = document.getElementById('hprMascot');
     if (hprMascot) {
-      const iconSrc = mascotIconFor(next.recycling, next.black);
-      hprMascot.setAttribute('href', iconSrc);
-      hprMascot.setAttribute('xlink:href', iconSrc);
+      hprMascot.setAttribute('href', mascotIconFor(next.recycling, next.black));
     }
     mascotWrap.classList.toggle('celebrate', isToday);
     if (isToday) launchConfetti();
