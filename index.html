@@ -249,39 +249,58 @@
     background: var(--accent-solid);
     box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent-solid) 20%, transparent);
   }
+  .hero-progress {
+    display: flex;
+    align-items: stretch;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  .hero-progress-rail {
+    flex-shrink: 0;
+    width: 52px;
+    height: 130px;
+  }
+  .hero-progress-rail svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    overflow: visible;
+  }
+  .hpr-track {
+    fill: none;
+    stroke: var(--border);
+    stroke-width: 4;
+    stroke-linecap: round;
+  }
+  .hpr-fill {
+    fill: none;
+    stroke: var(--accent-solid);
+    stroke-width: 4;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.4s ease, stroke 0.3s ease;
+  }
+  .hpr-enddot {
+    fill: var(--accent-solid);
+    stroke: var(--card-bg);
+    stroke-width: 3;
+    transition: fill 0.3s ease;
+  }
+  .hpr-mascot {
+    filter: drop-shadow(0 1px 3px rgba(0,0,0,0.3));
+  }
+  .hero-progress-text {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+  }
   .hero-clock {
     font-family: 'Nunito Sans', sans-serif;
     font-size: 0.9rem;
     color: var(--subtitle);
-    margin-bottom: 8px;
-  }
-  .week-progress-hero {
-    position: relative;
-    height: 14px;
-    border-radius: 999px;
-    background: var(--border);
-    margin: 0 10px 16px 0;
-  }
-  .week-progress-hero-fill {
-    position: relative;
-    height: 100%;
-    border-radius: 999px;
-    background: var(--accent);
-    transition: width 0.3s ease, background 0.3s ease;
-  }
-  .week-progress-hero-fill::after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    right: -3px;
-    transform: translate(50%, -50%);
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    background: var(--card-bg);
-    border: 3px solid var(--accent-solid);
-    box-shadow: 0 1px 4px rgba(0,0,0,0.25);
-    transition: border-color 0.3s ease;
+    margin-bottom: 4px;
   }
   .timeline-date {
     font-family: 'Nunito Sans', sans-serif;
@@ -603,6 +622,15 @@ function mascotFor(recycling, black) {
   return 'characters/food-full.png';
 }
 
+// Same precedence, but the small flat icon rather than the full illustration
+// — this one travels along the week-progress path, so it needs to read
+// clearly at ~30px rather than the detailed header artwork.
+function mascotIconFor(recycling, black) {
+  if (black) return 'characters/black-icon.png';
+  if (recycling) return 'characters/recycling-icon.png';
+  return 'characters/food-icon.png';
+}
+
 function nextCaption(days) {
   if (days === 0) return "Today · next up";
   if (days === 1) return "Tomorrow · next up";
@@ -634,13 +662,28 @@ function fmtClock(now) {
 // the whole card (which would re-trigger the bin-day confetti check).
 function updateWeekProgress() {
   const now = new Date();
-  const percent = Math.round(weekProgress(now) * 100);
+  const fraction = weekProgress(now);
+  const percent = Math.round(fraction * 100);
+
   const clockEl = document.getElementById('heroClock');
-  const fillEl = document.getElementById('weekProgressFill');
-  const barEl = document.getElementById('weekProgress');
   if (clockEl) clockEl.textContent = fmtClock(now);
-  if (fillEl) fillEl.style.width = `${percent}%`;
+
+  const barEl = document.getElementById('weekProgress');
   if (barEl) barEl.setAttribute('aria-valuenow', percent);
+
+  const fillPath = document.getElementById('hprFill');
+  const mascotImg = document.getElementById('hprMascot');
+  if (!fillPath) return;
+  const total = fillPath.getTotalLength();
+  fillPath.style.strokeDasharray = total;
+  fillPath.style.strokeDashoffset = total - total * fraction;
+  if (mascotImg) {
+    const pt = fillPath.getPointAtLength(total * fraction);
+    const w = Number(mascotImg.getAttribute('width'));
+    const h = Number(mascotImg.getAttribute('height'));
+    mascotImg.setAttribute('x', pt.x - w / 2);
+    mascotImg.setAttribute('y', pt.y - h / 2);
+  }
 }
 
 function buildTimelineItem(entry, isNext, today) {
@@ -649,12 +692,22 @@ function buildTimelineItem(entry, isNext, today) {
     return `
       <div class="timeline-item is-next">
         <span class="timeline-dot"></span>
-        <div class="hero-clock" id="heroClock"></div>
-        <div class="week-progress-hero" id="weekProgress" role="progressbar" aria-label="Progress through the week to bin day" aria-valuemin="0" aria-valuemax="100">
-          <div class="week-progress-hero-fill" id="weekProgressFill"></div>
+        <div class="hero-progress" id="weekProgress" role="progressbar" aria-label="Progress through the week to bin day" aria-valuemin="0" aria-valuemax="100">
+          <div class="hero-progress-rail">
+            <svg viewBox="0 0 52 130" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path class="hpr-track" d="M26 10 C 8 35, 44 50, 26 70 C 8 90, 44 105, 26 122"/>
+              <path id="hprFill" class="hpr-fill" d="M26 10 C 8 35, 44 50, 26 70 C 8 90, 44 105, 26 122"/>
+              <circle class="hpr-enddot" cx="26" cy="122" r="7"/>
+              <image id="hprMascot" class="hpr-mascot" width="30" height="30" x="11" y="-5"
+                     href="characters/food-icon.png"/>
+            </svg>
+          </div>
+          <div class="hero-progress-text">
+            <div class="hero-clock" id="heroClock"></div>
+            <div class="timeline-date">${fmtDateShort(entry.d)}</div>
+            <div class="timeline-caption">${nextCaption(days)}</div>
+          </div>
         </div>
-        <div class="timeline-date">${fmtDateShort(entry.d)}</div>
-        <div class="timeline-caption">${nextCaption(days)}</div>
         <div class="bins">${buildBins(entry.recycling, entry.black)}</div>
         ${entry.xmas ? '<div class="warning">⚠ Christmas period — council confirms exact date in December, this may shift</div>' : ''}
       </div>`;
@@ -700,6 +753,10 @@ function init() {
         ${upcoming.map((entry, i) => buildTimelineItem(entry, i === 0, today)).join('')}
       </div>
     `;
+    const hprMascot = document.getElementById('hprMascot');
+    if (hprMascot) {
+      hprMascot.setAttribute('href', mascotIconFor(next.recycling, next.black));
+    }
     mascotWrap.classList.toggle('celebrate', isToday);
     if (isToday) launchConfetti();
   } else {
