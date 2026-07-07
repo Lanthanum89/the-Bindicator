@@ -2,7 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Bindicator</title>
+<meta name="theme-color" content="#6b2d8c">
+<meta name="description" content="Never miss bin day again — West Berkshire Schedule 1 Thursday collection tracker.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
 <style>
   :root {
     --purple: #6b2d8c;
@@ -319,6 +325,12 @@ function toggleTable() {
 }
 
 init();
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch((err) => console.warn("SW registration failed:", err));
+  });
+}
 </script>
 
 </body>
