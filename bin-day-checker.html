@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>The Bindicator</title>
+<style>
+  :root {
+    --purple: #6b2d8c;
+    --green: #7cb342;
+    --black: #1a1a1a;
+    --orange: #e8720c;
+    --bg: #f4f2f6;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    margin: 0;
+    padding: 16px;
+    color: #222;
+  }
+  h1 {
+    font-size: 1.3rem;
+    margin: 0 0 4px;
+    color: var(--purple);
+  }
+  .subtitle {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 16px;
+  }
+  .next-card {
+    background: white;
+    border-radius: 12px;
+    padding: 18px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+  }
+  .next-card .label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #888;
+    margin-bottom: 6px;
+  }
+  .next-card .date {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--purple);
+    margin-bottom: 10px;
+  }
+  .bins {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .bin-tag {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: white;
+  }
+  .bin-food { background: var(--purple); }
+  .bin-recycling { background: var(--green); }
+  .bin-black { background: var(--black); }
+  .warning {
+    margin-top: 10px;
+    font-size: 0.8rem;
+    color: var(--orange);
+    font-weight: 600;
+  }
+  .toggle-btn {
+    background: none;
+    border: 1px solid var(--purple);
+    color: var(--purple);
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    margin-bottom: 12px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    font-size: 0.85rem;
+  }
+  th, td {
+    padding: 8px 6px;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+  }
+  th {
+    background: var(--purple);
+    color: white;
+    font-size: 0.75rem;
+  }
+  td:first-child, th:first-child {
+    text-align: left;
+    padding-left: 10px;
+  }
+  .today-row {
+    background: #f0e6f5;
+    font-weight: 700;
+  }
+  .orange-row td:first-child { color: var(--orange); }
+  #tableWrap { display: none; margin-top: 12px; }
+  .bin-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+  }
+  .bin-icon.food { background: var(--purple); }
+  .bin-icon.recycling { background: var(--green); }
+  .bin-icon.black { background: var(--black); }
+  .bin-icon {
+    transition: transform 0.2s ease;
+    cursor: default;
+  }
+  .bin-icon:hover {
+    transform: scale(1.25) rotate(-8deg);
+  }
+  h1 {
+    cursor: pointer;
+    display: inline-block;
+    user-select: none;
+  }
+  @keyframes spin-wobble {
+    0% { transform: rotate(0deg) scale(1); }
+    30% { transform: rotate(-15deg) scale(1.1); }
+    60% { transform: rotate(360deg) scale(1.1); }
+    100% { transform: rotate(360deg) scale(1); }
+  }
+  h1.spin { animation: spin-wobble 0.7s ease; }
+
+  .bins .bin-tag {
+    animation: pop-in 0.35s ease backwards;
+  }
+  .bins .bin-tag:nth-child(1) { animation-delay: 0.05s; }
+  .bins .bin-tag:nth-child(2) { animation-delay: 0.15s; }
+  .bins .bin-tag:nth-child(3) { animation-delay: 0.25s; }
+  @keyframes pop-in {
+    0% { opacity: 0; transform: scale(0.6) translateY(6px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .today-banner {
+    background: var(--orange);
+    color: white;
+    font-weight: 700;
+    text-align: center;
+    padding: 8px;
+    border-radius: 8px;
+    margin-bottom: 14px;
+    animation: pulse 1.4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+
+  #confettiCanvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 999;
+  }
+</style>
+</head>
+<body>
+
+<h1 id="titleEl">🗑️ The Bindicator</h1>
+<div class="subtitle">West Berkshire · Schedule 1 Thursday · never miss bin day again</div>
+<canvas id="confettiCanvas"></canvas>
+
+<div class="next-card" id="nextCard"></div>
+
+<button class="toggle-btn" onclick="toggleTable()">Show full calendar ▾</button>
+<div id="tableWrap">
+  <table>
+    <thead>
+      <tr><th>Date</th><th>Food</th><th>Recycling</th><th>Black bin</th></tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+</div>
+
+<script>
+// [date, recycling, black, isChristmasPeriod] — food waste is every date
+const data = [
+  ["2026-04-02",0,1,0],["2026-04-09",1,0,0],["2026-04-16",0,0,0],["2026-04-23",1,1,0],
+  ["2026-04-30",0,0,0],["2026-05-07",1,0,0],["2026-05-14",0,1,0],["2026-05-21",1,0,0],
+  ["2026-05-28",0,0,0],["2026-06-04",1,1,0],["2026-06-11",0,0,0],["2026-06-18",1,0,0],
+  ["2026-06-25",0,1,0],["2026-07-02",1,0,0],["2026-07-09",0,0,0],["2026-07-16",1,1,0],
+  ["2026-07-23",0,0,0],["2026-07-30",1,0,0],["2026-08-06",0,1,0],["2026-08-13",1,0,0],
+  ["2026-08-20",0,0,0],["2026-08-27",1,1,0],["2026-09-03",0,0,0],["2026-09-10",1,0,0],
+  ["2026-09-17",0,1,0],["2026-09-24",1,0,0],["2026-10-01",0,0,0],["2026-10-08",1,1,0],
+  ["2026-10-15",0,0,0],["2026-10-22",1,0,0],["2026-10-29",0,1,0],["2026-11-05",1,0,0],
+  ["2026-11-12",0,0,0],["2026-11-19",1,1,0],["2026-11-26",0,0,0],["2026-12-03",1,0,0],
+  ["2026-12-10",0,1,0],["2026-12-17",1,0,0],["2026-12-24",0,0,1],["2026-12-31",1,1,1],
+  ["2027-01-07",0,0,1],["2027-01-14",1,0,1],["2027-01-21",0,1,0],["2027-01-28",1,0,0],
+  ["2027-02-04",0,0,0],["2027-02-11",1,1,0],["2027-02-18",0,0,0],["2027-02-25",1,0,0],
+  ["2027-03-04",0,1,0],["2027-03-11",1,0,0],["2027-03-18",0,0,0],["2027-03-25",1,1,0]
+];
+
+function fmtDate(d) {
+  return d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+}
+
+function buildBins(recycling, black) {
+  let html = '<span class="bin-tag bin-food">🍎 Food waste</span>';
+  if (recycling) html += '<span class="bin-tag bin-recycling">♻️ Recycling &amp; garden</span>';
+  if (black) html += '<span class="bin-tag bin-black">🗑️ Black bin</span>';
+  return html;
+}
+
+function init() {
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  let next = null;
+  for (const row of data) {
+    const d = new Date(row[0] + 'T00:00:00');
+    if (d >= today) { next = { d, recycling: row[1], black: row[2], xmas: row[3] }; break; }
+  }
+
+  const card = document.getElementById('nextCard');
+  if (next) {
+    const isToday = next.d.getTime() === today.getTime();
+    card.innerHTML = `
+      ${isToday ? '<div class="today-banner">🚛 IT\'S BIN DAY! Bins out by 6am 🚛</div>' : ''}
+      <div class="label">${isToday ? "Today's collection" : "Next collection"}</div>
+      <div class="date">${fmtDate(next.d)}</div>
+      <div class="bins">${buildBins(next.recycling, next.black)}</div>
+      ${next.xmas ? '<div class="warning">⚠ Christmas period — council confirms exact date in December, this may shift</div>' : ''}
+    `;
+    if (isToday) launchConfetti();
+  } else {
+    card.innerHTML = '<div class="label">No dates loaded</div><div class="date">Calendar ends 25 March 2027</div>';
+  }
+
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = data.map(row => {
+    const d = new Date(row[0] + 'T00:00:00');
+    const isToday = d.getTime() === today.getTime();
+    return `<tr class="${isToday ? 'today-row' : ''} ${row[3] ? 'orange-row' : ''}">
+      <td>${d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
+      <td><span class="bin-icon food">🍎</span></td>
+      <td>${row[1] ? '<span class="bin-icon recycling">♻️</span>' : ''}</td>
+      <td>${row[2] ? '<span class="bin-icon black">🗑️</span>' : ''}</td>
+    </tr>`;
+  }).join('');
+}
+
+function launchConfetti() {
+  const canvas = document.getElementById('confettiCanvas');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const ctx = canvas.getContext('2d');
+  const colors = ['#6b2d8c', '#7cb342', '#1a1a1a', '#e8720c'];
+  const pieces = Array.from({ length: 60 }, () => ({
+    x: Math.random() * canvas.width,
+    y: -20 - Math.random() * canvas.height * 0.3,
+    size: 5 + Math.random() * 6,
+    speed: 2 + Math.random() * 3,
+    drift: (Math.random() - 0.5) * 2,
+    rotation: Math.random() * 360,
+    spin: (Math.random() - 0.5) * 10,
+    color: colors[Math.floor(Math.random() * colors.length)]
+  }));
+
+  let frame = 0;
+  function tick() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    pieces.forEach(p => {
+      p.y += p.speed;
+      p.x += p.drift;
+      p.rotation += p.spin;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rotation * Math.PI / 180);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+      ctx.restore();
+    });
+    frame++;
+    if (frame < 150) {
+      requestAnimationFrame(tick);
+    } else {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+  }
+  tick();
+}
+
+function spinTitle() {
+  const el = document.getElementById('titleEl');
+  el.classList.remove('spin');
+  void el.offsetWidth;
+  el.classList.add('spin');
+}
+
+document.getElementById('titleEl').addEventListener('click', spinTitle);
+
+function toggleTable() {
+  const wrap = document.getElementById('tableWrap');
+  const btn = document.querySelector('.toggle-btn');
+  const showing = wrap.style.display === 'block';
+  wrap.style.display = showing ? 'none' : 'block';
+  btn.textContent = showing ? 'Show full calendar ▾' : 'Hide full calendar ▴';
+}
+
+init();
+</script>
+
+</body>
+</html>
