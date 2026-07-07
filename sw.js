@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "bindicator-";
-const CACHE_NAME = `${CACHE_PREFIX}shell-v9`;
+const CACHE_NAME = `${CACHE_PREFIX}shell-v11`;
 const SHELL_FILES = [
   "./",
   "./index.html",
@@ -8,7 +8,8 @@ const SHELL_FILES = [
   "./icons/icon-512.png",
   "./icons/icon-maskable-192.png",
   "./icons/icon-maskable-512.png",
-  "./fonts/quicksand-variable.woff2",
+  "./fonts/fredoka-variable.woff2",
+  "./fonts/nunito-sans-variable.woff2",
   "./characters/food-icon.png",
   "./characters/recycling-icon.png",
   "./characters/black-icon.png",

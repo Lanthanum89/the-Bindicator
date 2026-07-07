@@ -11,7 +11,7 @@ Installable as a PWA — works offline once added to your home screen.
 - `sw.js` — service worker, cache-first for the static shell so it works fully offline once installed
 - `icons/` — app icons (192px / 512px, plus maskable variants for Android adaptive icons), derived from the mascot artwork in `graphics/`
 - `graphics/mascot-hero.png` — the full mascot illustration (with wordmark), used as the social share preview (`og:image`); the app icons are a cropped, full-bleed, text-free derivative of this same artwork
-- `fonts/` — self-hosted Quicksand variable font (OFL-licensed, see `fonts/OFL.txt`) used for headings and accents; self-hosted rather than CDN-loaded so it still works offline
+- `fonts/` — two self-hosted variable fonts (OFL-licensed, see `fonts/OFL-Fredoka.txt` and `fonts/OFL-NunitoSans.txt`): Fredoka for the title/logo (the one thing meant to stand out most) and Nunito Sans for everything else; self-hosted rather than CDN-loaded so it still works offline
 - `characters/` — illustrated bin characters (food/recycling/black), each in two forms: a small flat `*-icon.png` used in the bin-tag pills and calendar chips, and a larger detailed `*-full.png` used for the header mascot
 - `bindicator-source.ts` — typed reference copy of the schedule data model; not compiled or used at runtime, kept in case this ever moves into a real build pipeline
 
@@ -19,7 +19,7 @@ Installable as a PWA — works offline once added to your home screen.
 
 Beyond the raw schedule, the app has a bit of personality: an illustrated bin mascot in the header (click it, it wiggles), a vertical timeline of the next three collections, confetti on bin day, and dark mode support with a manual toggle (the sun/moon button in the header). The toggle defaults to your OS preference and remembers an explicit choice in `localStorage` after that.
 
-A thin progress bar under the header fills up smoothly through the week — it resets to empty at Friday midnight (the day after collection) and reaches full by the end of Thursday (collection day), so it reads at a glance as "how close is bin day." The full calendar table only shows today and future dates; past collections drop off automatically.
+The hero card leads with a small live clock (current date/time, just for reference) above a bolder progress bar with a slider-style marker — it fills up smoothly through the week, resetting to empty at Friday midnight (the day after collection) and reaching full by the end of Thursday (collection day), so it reads at a glance as "how close is bin day." The bar's fill colour doubles as the accent colour (matching the dot/mascot), so it communicates both. The full calendar table only shows today and future dates; past collections drop off automatically.
 
 Food waste is collected every week, so it isn't useful as an accent colour — purple is reserved for the food-waste badge itself. The timeline's accent (top bar and dot) instead highlights whichever *extra* bin is due: green for recycling, black for the black bin, a green→black gradient when both are due, and a neutral grey on plain food-only weeks. The header mascot follows the same precedence, swapping between the three illustrated characters (food/recycling/black) to match.
 
