@@ -1,6 +1,6 @@
 # The Bindicator 🗑️
 
-Never miss bin day again. A neighbourhood-shareable bin day checker for West Berkshire (Schedule 1 Thursday) — shows the next collection with colour-coded bin icons (food waste, recycling & garden, black bin), flags the unconfirmed Christmas period dates, and includes a full browsable calendar through March 2027.
+Never miss bin day again. A neighbourhood-shareable bin day checker — shows the next collection with colour-coded bin icons (food waste, recycling & garden, black bin), flags the unconfirmed Christmas period dates, and includes a full browsable calendar through March 2027.
 
 Installable as a PWA — works offline once added to your home screen.
 
