@@ -17,7 +17,7 @@ Installable as a PWA — works offline once added to your home screen.
 
 ## Character
 
-Beyond the raw schedule, the app has a bit of personality: an illustrated bin mascot in the header (click it, it wiggles), a vertical timeline of the next three collections, confetti on bin day, and dark mode support.
+Beyond the raw schedule, the app has a bit of personality: an illustrated bin mascot in the header (click it, it wiggles), a vertical timeline of the next three collections, confetti on bin day, and dark mode support with a manual toggle (the sun/moon button in the header). The toggle defaults to your OS preference and remembers an explicit choice in `localStorage` after that.
 
 Food waste is collected every week, so it isn't useful as an accent colour — purple is reserved for the food-waste badge itself. The timeline's accent (top bar and dot) instead highlights whichever *extra* bin is due: green for recycling, black for the black bin, a green→black gradient when both are due, and a neutral grey on plain food-only weeks. The header mascot follows the same precedence, swapping between the three illustrated characters (food/recycling/black) to match.
 

@@ -55,6 +55,30 @@
     }
   }
 
+  /* Explicit user choice (remembered in localStorage) overrides the system
+     preference above — the attribute selector's higher specificity wins
+     regardless of source order or which way prefers-color-scheme falls. */
+  :root[data-theme="dark"] {
+    --brand: #aeb6c2;
+    --brand-contrast: #1a1626;
+    --bg: #17121e;
+    --card-bg: #241c2e;
+    --text: #f2eef7;
+    --subtitle: #b6a9c4;
+    --table-bg: #201929;
+    --border: #3a3145;
+  }
+  :root[data-theme="light"] {
+    --brand: #48505c;
+    --brand-contrast: #ffffff;
+    --bg: #f4f2f6;
+    --card-bg: #ffffff;
+    --text: #222222;
+    --subtitle: #666666;
+    --table-bg: #ffffff;
+    --border: #eeeeee;
+  }
+
   * { box-sizing: border-box; }
 
   body {
@@ -92,6 +116,29 @@
     align-items: center;
     gap: 14px;
     margin-bottom: 16px;
+  }
+
+  .theme-toggle {
+    margin-left: auto;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s ease, background 0.3s ease;
+  }
+  .theme-toggle:hover {
+    transform: scale(1.08);
+  }
+  .theme-toggle:active {
+    transform: scale(0.95);
   }
 
   h1 {
@@ -380,6 +427,7 @@
     <img id="mascotImg" src="characters/food-full.png" alt="">
   </div>
   <h1 id="titleEl" role="button" tabindex="0" aria-label="The Bindicator (wobble it)">The Bindicator</h1>
+  <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light mode" title="Toggle dark/light mode">🌙</button>
 </div>
 <canvas id="confettiCanvas"></canvas>
 
@@ -391,7 +439,7 @@
   <span class="icon-key-item"><img src="characters/black-icon.png" alt="">Black bin</span>
 </div>
 
-<button class="toggle-btn" onclick="toggleTable()">Show all dates ▾</button>
+<button type="button" class="toggle-btn" onclick="toggleTable()">Show all dates ▾</button>
 <div id="tableWrap">
   <table>
     <thead>
@@ -441,8 +489,37 @@ function buildBins(recycling, black) {
 const PALETTE_LIGHT = { green: '#7cb342', black: '#1a1a1a', neutral: '#5b6472' };
 const PALETTE_DARK = { green: '#7cb342', black: '#aeb6c2', neutral: '#9aa5b3' };
 
+const THEME_KEY = 'bindicator-theme';
+
+// localStorage access can throw (private browsing, storage disabled, etc.),
+// so reads/writes go through these rather than touching it directly.
+function readStoredTheme() {
+  try {
+    return localStorage.getItem(THEME_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function writeStoredTheme(theme) {
+  try {
+    localStorage.setItem(THEME_KEY, theme);
+  } catch {
+    // Persistence is a nice-to-have; the toggle still works for this session.
+  }
+}
+
+// The user's explicit toggle choice (if any) wins over the OS-level
+// prefers-color-scheme, so every theme-aware bit of JS reads through here
+// rather than checking matchMedia directly.
+function currentTheme() {
+  const saved = readStoredTheme();
+  if (saved === 'dark' || saved === 'light') return saved;
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
 function getPalette() {
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? PALETTE_DARK : PALETTE_LIGHT;
+  return currentTheme() === 'dark' ? PALETTE_DARK : PALETTE_LIGHT;
 }
 
 // Food waste goes out every collection, so it isn't informative as an accent
@@ -619,6 +696,23 @@ function toggleTable() {
   btn.textContent = showing ? 'Show all dates ▾' : 'Hide all dates ▴';
 }
 
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  document.getElementById('themeToggle').textContent = theme === 'dark' ? '☀️' : '🌙';
+  const bg = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
+  document.querySelector('meta[name="theme-color"]').setAttribute('content', bg);
+}
+
+function toggleTheme() {
+  const next = currentTheme() === 'dark' ? 'light' : 'dark';
+  writeStoredTheme(next);
+  applyTheme(next);
+  init(); // recompute accent colours, which depend on the active theme
+}
+
+document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+
+applyTheme(currentTheme());
 init();
 
 if ("serviceWorker" in navigator) {
