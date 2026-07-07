@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "bindicator-";
-const CACHE_NAME = `${CACHE_PREFIX}shell-v5`;
+const CACHE_NAME = `${CACHE_PREFIX}shell-v6`;
 const SHELL_FILES = [
   "./",
   "./index.html",
@@ -9,6 +9,12 @@ const SHELL_FILES = [
   "./icons/icon-maskable-192.png",
   "./icons/icon-maskable-512.png",
   "./fonts/quicksand-variable.woff2",
+  "./characters/food-icon.png",
+  "./characters/recycling-icon.png",
+  "./characters/black-icon.png",
+  "./characters/food-full.png",
+  "./characters/recycling-full.png",
+  "./characters/black-full.png",
 ];
 
 self.addEventListener("install", (event) => {

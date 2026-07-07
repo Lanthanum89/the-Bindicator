@@ -108,29 +108,21 @@
   .mascot-wrap {
     cursor: pointer;
     flex-shrink: 0;
+    height: 84px;
   }
-  .mascot-bounce {
-    transform-box: fill-box;
-    transform-origin: center;
+  #mascotImg {
+    height: 100%;
+    width: auto;
+    display: block;
     animation: idle-bounce 3.2s ease-in-out infinite;
   }
   @keyframes idle-bounce {
     0%, 100% { transform: translateY(0) rotate(-2deg); }
     50%      { transform: translateY(-4px) rotate(2deg); }
   }
-  .mascot-eyelid {
-    transform-box: fill-box;
-    transform-origin: center;
-    animation: blink 4.6s ease-in-out infinite;
+  .mascot-wrap.celebrate #mascotImg {
+    animation-duration: 1.1s;
   }
-  .mascot-eyelid:nth-of-type(2) { animation-delay: 0.12s; }
-  @keyframes blink {
-    0%, 90%, 100% { transform: scaleY(0); }
-    94%           { transform: scaleY(1); }
-  }
-  .party-hat { display: none; }
-  .mascot-wrap.celebrate .party-hat { display: block; }
-  .mascot-wrap.celebrate .mascot-bounce { animation-duration: 1.1s; }
 
   .spin-wobble { animation: spin-wobble-kf 0.7s ease; }
   @keyframes spin-wobble-kf {
@@ -227,11 +219,20 @@
   }
   .bin-tag {
     font-family: 'Quicksand', sans-serif;
-    padding: 7px 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
     border-radius: 20px;
     font-size: 0.95rem;
     font-weight: 600;
     color: white;
+  }
+  .tag-icon {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    flex-shrink: 0;
   }
   .bin-food { background: var(--purple); }
   .bin-recycling { background: var(--green); }
@@ -298,14 +299,14 @@
     justify-content: center;
     width: 30px;
     height: 30px;
-    border-radius: 7px;
-    font-size: 1.05rem;
     transition: transform 0.2s ease;
     cursor: default;
   }
-  .bin-icon.food { background: var(--purple); }
-  .bin-icon.recycling { background: var(--green); }
-  .bin-icon.black { background: var(--black); }
+  .bin-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
   .bin-icon:hover {
     transform: scale(1.25) rotate(-8deg);
   }
@@ -358,36 +359,7 @@
 
 <div class="header-row">
   <div class="mascot-wrap" id="mascotWrap" role="button" tabindex="0" aria-label="Boop the bin">
-    <svg viewBox="0 -16 100 126" width="68" height="86" aria-hidden="true">
-      <defs>
-        <linearGradient id="mascotGrad" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stop-color="#6b2d8c"/>
-          <stop offset="100%" stop-color="#6b2d8c"/>
-        </linearGradient>
-      </defs>
-      <g class="mascot-bounce">
-        <rect x="14" y="34" width="72" height="62" rx="16" fill="url(#mascotGrad)"/>
-        <line x1="35" y1="46" x2="35" y2="86" stroke="rgba(255,255,255,0.35)" stroke-width="3"/>
-        <line x1="50" y1="46" x2="50" y2="86" stroke="rgba(255,255,255,0.35)" stroke-width="3"/>
-        <line x1="65" y1="46" x2="65" y2="86" stroke="rgba(255,255,255,0.35)" stroke-width="3"/>
-        <rect x="10" y="14" width="80" height="22" rx="11" fill="var(--black)"/>
-        <circle cx="38" cy="58" r="11" fill="#fff"/>
-        <circle cx="62" cy="58" r="11" fill="#fff"/>
-        <circle cx="38" cy="58" r="5" fill="#1a1a1a"/>
-        <circle cx="62" cy="58" r="5" fill="#1a1a1a"/>
-        <rect class="mascot-eyelid" x="27" y="47" width="22" height="22" fill="var(--neutral)"/>
-        <rect class="mascot-eyelid" x="51" y="47" width="22" height="22" fill="var(--neutral)"/>
-        <ellipse cx="30" cy="72" rx="5" ry="3" fill="#ff9fc2" opacity="0.5"/>
-        <ellipse cx="70" cy="72" rx="5" ry="3" fill="#ff9fc2" opacity="0.5"/>
-        <path d="M42 78 Q50 86 58 78" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-        <g class="party-hat">
-          <polygon points="50,-14 36,14 64,14" fill="var(--orange)"/>
-          <circle cx="50" cy="-6" r="3" fill="#fff"/>
-          <circle cx="44" cy="4" r="2.3" fill="#fff"/>
-          <circle cx="56" cy="4" r="2.3" fill="#fff"/>
-        </g>
-      </g>
-    </svg>
+    <img id="mascotImg" src="characters/food-full.png" alt="">
   </div>
   <h1 id="titleEl" role="button" tabindex="0" aria-label="The Bindicator (wobble it)">The Bindicator</h1>
 </div>
@@ -432,9 +404,9 @@ function fmtDateShort(d) {
 }
 
 function buildBins(recycling, black) {
-  let html = '<span class="bin-tag bin-food">🍎 Food waste</span>';
-  if (recycling) html += '<span class="bin-tag bin-recycling">♻️ Recycling &amp; garden</span>';
-  if (black) html += '<span class="bin-tag bin-black">🗑️ Black bin</span>';
+  let html = '<span class="bin-tag bin-food"><img class="tag-icon" src="characters/food-icon.png" alt="">Food waste</span>';
+  if (recycling) html += '<span class="bin-tag bin-recycling"><img class="tag-icon" src="characters/recycling-icon.png" alt="">Recycling &amp; garden</span>';
+  if (black) html += '<span class="bin-tag bin-black"><img class="tag-icon" src="characters/black-icon.png" alt="">Black bin</span>';
   return html;
 }
 
@@ -465,11 +437,13 @@ function gradientCss(stops) {
   return stops.length === 1 ? stops[0] : `linear-gradient(90deg, ${stops.join(', ')})`;
 }
 
-function setMascotGradient(stops) {
-  const grad = document.getElementById('mascotGrad');
-  grad.innerHTML = stops.length === 1
-    ? `<stop offset="0%" stop-color="${stops[0]}"/><stop offset="100%" stop-color="${stops[0]}"/>`
-    : stops.map((c, i) => `<stop offset="${(i / (stops.length - 1)) * 100}%" stop-color="${c}"/>`).join('');
+// Same precedence as accentStops: black bin wins over recycling, which wins
+// over the plain food-only default, so the mascot always echoes whichever
+// bin the accent bar/dot are currently highlighting.
+function mascotFor(recycling, black) {
+  if (black) return 'characters/black-full.png';
+  if (recycling) return 'characters/recycling-full.png';
+  return 'characters/food-full.png';
 }
 
 function nextCaption(days) {
@@ -497,9 +471,9 @@ function buildTimelineItem(entry, isNext, today) {
       <span class="timeline-dot"></span>
       <div class="timeline-date">${fmtDateShort(entry.d)}</div>
       <div class="timeline-icons">
-        <span class="bin-icon food">🍎</span>
-        ${entry.recycling ? '<span class="bin-icon recycling">♻️</span>' : ''}
-        ${entry.black ? '<span class="bin-icon black">🗑️</span>' : ''}
+        <span class="bin-icon food"><img src="characters/food-icon.png" alt="Food waste"></span>
+        ${entry.recycling ? '<span class="bin-icon recycling"><img src="characters/recycling-icon.png" alt="Recycling"></span>' : ''}
+        ${entry.black ? '<span class="bin-icon black"><img src="characters/black-icon.png" alt="Black bin"></span>' : ''}
       </div>
     </div>`;
 }
@@ -525,7 +499,7 @@ function init() {
     const stops = accentStops(next.recycling, next.black);
     card.style.setProperty('--accent', gradientCss(stops));
     card.style.setProperty('--accent-solid', stops[stops.length - 1]);
-    setMascotGradient(stops);
+    document.getElementById('mascotImg').src = mascotFor(next.recycling, next.black);
     card.innerHTML = `
       <div class="accent-bar"></div>
       ${isToday ? '<div class="today-banner">🚛 IT\'S BIN DAY! Bins out by 6am 🚛</div>' : ''}
@@ -545,9 +519,9 @@ function init() {
     const isToday = d.getTime() === today.getTime();
     return `<tr class="${isToday ? 'today-row' : ''} ${row[3] ? 'orange-row' : ''}">
       <td>${d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
-      <td><span class="bin-icon food">🍎</span></td>
-      <td>${row[1] ? '<span class="bin-icon recycling">♻️</span>' : ''}</td>
-      <td>${row[2] ? '<span class="bin-icon black">🗑️</span>' : ''}</td>
+      <td><span class="bin-icon food"><img src="characters/food-icon.png" alt="Food waste"></span></td>
+      <td>${row[1] ? '<span class="bin-icon recycling"><img src="characters/recycling-icon.png" alt="Recycling"></span>' : ''}</td>
+      <td>${row[2] ? '<span class="bin-icon black"><img src="characters/black-icon.png" alt="Black bin"></span>' : ''}</td>
     </tr>`;
   }).join('');
 }
