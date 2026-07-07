@@ -10,37 +10,149 @@
 <link rel="icon" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <style>
+  @font-face {
+    font-family: 'Fredoka';
+    src: url('fonts/fredoka-variable.woff2') format('woff2-variations'),
+         url('fonts/fredoka-variable.woff2') format('woff2');
+    font-weight: 300 700;
+    font-style: normal;
+    font-display: swap;
+  }
+
   :root {
     --purple: #6b2d8c;
     --green: #7cb342;
     --black: #1a1a1a;
     --orange: #e8720c;
     --bg: #f4f2f6;
+    --card-bg: #ffffff;
+    --text: #222222;
+    --subtitle: #666666;
+    --table-bg: #ffffff;
+    --border: #eeeeee;
+    --accent: var(--purple);
   }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #17121e;
+      --card-bg: #241c2e;
+      --text: #f2eef7;
+      --subtitle: #b6a9c4;
+      --table-bg: #201929;
+      --border: #3a3145;
+    }
+  }
+
   * { box-sizing: border-box; }
+
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     background: var(--bg);
     margin: 0;
     padding: 16px;
-    color: #222;
+    color: var(--text);
+    position: relative;
+    overflow-x: hidden;
+    transition: background 0.3s ease, color 0.3s ease;
   }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(107, 45, 140, 0.16), transparent 40%),
+      radial-gradient(circle at 85% 15%, rgba(124, 179, 66, 0.16), transparent 42%),
+      radial-gradient(circle at 50% 95%, rgba(232, 114, 12, 0.12), transparent 45%);
+    background-size: 180% 180%;
+    animation: drift 24s ease-in-out infinite alternate;
+  }
+
+  @keyframes drift {
+    0%   { background-position: 0% 0%, 100% 0%, 50% 100%; }
+    100% { background-position: 25% 30%, 70% 50%, 65% 75%; }
+  }
+
+  .header-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
   h1 {
-    font-size: 1.3rem;
+    font-family: 'Fredoka', -apple-system, sans-serif;
+    font-weight: 600;
+    font-size: 1.5rem;
     margin: 0 0 4px;
     color: var(--purple);
+    cursor: pointer;
+    display: inline-block;
+    user-select: none;
   }
+
+  .mascot-wrap {
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .mascot-bounce {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: idle-bounce 3.2s ease-in-out infinite;
+  }
+  @keyframes idle-bounce {
+    0%, 100% { transform: translateY(0) rotate(-2deg); }
+    50%      { transform: translateY(-4px) rotate(2deg); }
+  }
+  .mascot-eyelid {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: blink 4.6s ease-in-out infinite;
+  }
+  .mascot-eyelid:nth-of-type(2) { animation-delay: 0.12s; }
+  @keyframes blink {
+    0%, 90%, 100% { transform: scaleY(0); }
+    94%           { transform: scaleY(1); }
+  }
+  .party-hat { display: none; }
+  .mascot-wrap.celebrate .party-hat { display: block; }
+  .mascot-wrap.celebrate .mascot-bounce { animation-duration: 1.1s; }
+
+  .spin-wobble { animation: spin-wobble-kf 0.7s ease; }
+  @keyframes spin-wobble-kf {
+    0%   { transform: rotate(0deg) scale(1); }
+    30%  { transform: rotate(-15deg) scale(1.1); }
+    60%  { transform: rotate(360deg) scale(1.1); }
+    100% { transform: rotate(360deg) scale(1); }
+  }
+
   .subtitle {
     font-size: 0.85rem;
-    color: #666;
-    margin-bottom: 16px;
+    color: var(--subtitle);
+    margin-bottom: 4px;
   }
+
+  .tagline {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--orange);
+    margin: 0 0 16px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .tagline:before { content: "✨ "; }
+  .tagline:hover { text-decoration: underline; }
+
   .next-card {
-    background: white;
+    background: var(--card-bg);
     border-radius: 12px;
     padding: 18px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     margin-bottom: 20px;
+    border-top: 6px solid var(--accent);
+    transition: background 0.3s ease, border-color 0.3s ease;
   }
   .next-card .label {
     font-size: 0.75rem;
@@ -49,11 +161,28 @@
     color: #888;
     margin-bottom: 6px;
   }
-  .next-card .date {
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: var(--purple);
+  .next-card .date-row {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    flex-wrap: wrap;
     margin-bottom: 10px;
+  }
+  .next-card .date {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 1.4rem;
+    color: var(--purple);
+  }
+  .days-chip {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: color-mix(in srgb, var(--accent) 18%, transparent);
+    color: var(--accent);
+    white-space: nowrap;
   }
   .bins {
     display: flex;
@@ -61,6 +190,7 @@
     flex-wrap: wrap;
   }
   .bin-tag {
+    font-family: 'Fredoka', sans-serif;
     padding: 6px 12px;
     border-radius: 20px;
     font-size: 0.85rem;
@@ -77,19 +207,29 @@
     font-weight: 600;
   }
   .toggle-btn {
+    font-family: 'Fredoka', sans-serif;
     background: none;
     border: 1px solid var(--purple);
     color: var(--purple);
     padding: 8px 14px;
     border-radius: 8px;
     font-size: 0.85rem;
+    font-weight: 500;
     cursor: pointer;
     margin-bottom: 12px;
+    transition: transform 0.15s ease, background 0.15s ease;
   }
+  .toggle-btn:hover {
+    background: var(--purple);
+    color: white;
+    transform: translateY(-1px);
+  }
+  .toggle-btn:active { transform: translateY(0) scale(0.97); }
+
   table {
     width: 100%;
     border-collapse: collapse;
-    background: white;
+    background: var(--table-bg);
     border-radius: 8px;
     overflow: hidden;
     font-size: 0.85rem;
@@ -97,9 +237,11 @@
   th, td {
     padding: 8px 6px;
     text-align: center;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
   }
   th {
+    font-family: 'Fredoka', sans-serif;
     background: var(--purple);
     color: white;
     font-size: 0.75rem;
@@ -109,7 +251,7 @@
     padding-left: 10px;
   }
   .today-row {
-    background: #f0e6f5;
+    background: color-mix(in srgb, var(--purple) 12%, var(--table-bg));
     font-weight: 700;
   }
   .orange-row td:first-child { color: var(--orange); }
@@ -122,29 +264,15 @@
     height: 26px;
     border-radius: 6px;
     font-size: 0.9rem;
+    transition: transform 0.2s ease;
+    cursor: default;
   }
   .bin-icon.food { background: var(--purple); }
   .bin-icon.recycling { background: var(--green); }
   .bin-icon.black { background: var(--black); }
-  .bin-icon {
-    transition: transform 0.2s ease;
-    cursor: default;
-  }
   .bin-icon:hover {
     transform: scale(1.25) rotate(-8deg);
   }
-  h1 {
-    cursor: pointer;
-    display: inline-block;
-    user-select: none;
-  }
-  @keyframes spin-wobble {
-    0% { transform: rotate(0deg) scale(1); }
-    30% { transform: rotate(-15deg) scale(1.1); }
-    60% { transform: rotate(360deg) scale(1.1); }
-    100% { transform: rotate(360deg) scale(1); }
-  }
-  h1.spin { animation: spin-wobble 0.7s ease; }
 
   .bins .bin-tag {
     animation: pop-in 0.35s ease backwards;
@@ -158,9 +286,10 @@
   }
 
   .today-banner {
+    font-family: 'Fredoka', sans-serif;
     background: var(--orange);
     color: white;
-    font-weight: 700;
+    font-weight: 600;
     text-align: center;
     padding: 8px;
     border-radius: 8px;
@@ -179,12 +308,49 @@
     pointer-events: none;
     z-index: 999;
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
 </style>
 </head>
 <body>
 
-<h1 id="titleEl">🗑️ The Bindicator</h1>
+<div class="header-row">
+  <div class="mascot-wrap" id="mascotWrap" title="Boop the bin">
+    <svg viewBox="0 -16 100 126" width="56" height="70" aria-hidden="true">
+      <g class="mascot-bounce">
+        <rect x="14" y="34" width="72" height="62" rx="16" fill="var(--purple)"/>
+        <line x1="35" y1="46" x2="35" y2="86" stroke="rgba(255,255,255,0.35)" stroke-width="3"/>
+        <line x1="50" y1="46" x2="50" y2="86" stroke="rgba(255,255,255,0.35)" stroke-width="3"/>
+        <line x1="65" y1="46" x2="65" y2="86" stroke="rgba(255,255,255,0.35)" stroke-width="3"/>
+        <rect x="10" y="14" width="80" height="22" rx="11" fill="var(--black)"/>
+        <circle cx="38" cy="58" r="11" fill="#fff"/>
+        <circle cx="62" cy="58" r="11" fill="#fff"/>
+        <circle cx="38" cy="58" r="5" fill="#1a1a1a"/>
+        <circle cx="62" cy="58" r="5" fill="#1a1a1a"/>
+        <rect class="mascot-eyelid" x="27" y="47" width="22" height="22" fill="var(--purple)"/>
+        <rect class="mascot-eyelid" x="51" y="47" width="22" height="22" fill="var(--purple)"/>
+        <ellipse cx="30" cy="72" rx="5" ry="3" fill="#ff9fc2" opacity="0.5"/>
+        <ellipse cx="70" cy="72" rx="5" ry="3" fill="#ff9fc2" opacity="0.5"/>
+        <path d="M42 78 Q50 86 58 78" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+        <g class="party-hat">
+          <polygon points="50,-14 36,14 64,14" fill="var(--orange)"/>
+          <circle cx="50" cy="-6" r="3" fill="#fff"/>
+          <circle cx="44" cy="4" r="2.3" fill="#fff"/>
+          <circle cx="56" cy="4" r="2.3" fill="#fff"/>
+        </g>
+      </g>
+    </svg>
+  </div>
+  <h1 id="titleEl">The Bindicator</h1>
+</div>
 <div class="subtitle">West Berkshire · Schedule 1 Thursday · never miss bin day again</div>
+<p class="tagline" id="tagline"></p>
 <canvas id="confettiCanvas"></canvas>
 
 <div class="next-card" id="nextCard"></div>
@@ -217,6 +383,17 @@ const data = [
   ["2027-03-04",0,1,0],["2027-03-11",1,0,0],["2027-03-18",0,0,0],["2027-03-25",1,1,0]
 ];
 
+const TAGLINES = [
+  "Bin there, done that.",
+  "Trash talk, but make it useful.",
+  "Rubbish timing? Not on our watch.",
+  "Your neighbourhood's finest waste oracle.",
+  "Keeping curbs classy since day one.",
+  "May your bins always be where they belong.",
+  "Wheelie good at this, if we do say so.",
+  "Zero excuses for a missed collection.",
+];
+
 function fmtDate(d) {
   return d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
 }
@@ -226,6 +403,29 @@ function buildBins(recycling, black) {
   if (recycling) html += '<span class="bin-tag bin-recycling">♻️ Recycling &amp; garden</span>';
   if (black) html += '<span class="bin-tag bin-black">🗑️ Black bin</span>';
   return html;
+}
+
+function accentFor(recycling, black) {
+  if (recycling && black) return 'linear-gradient(90deg, var(--green), var(--black))';
+  if (recycling) return 'var(--green)';
+  if (black) return 'var(--black)';
+  return 'var(--purple)';
+}
+
+function daysChip(days) {
+  if (days === 0) return "Today!";
+  if (days === 1) return "Tomorrow";
+  return `In ${days} days`;
+}
+
+function setTagline(avoid) {
+  const el = document.getElementById('tagline');
+  let pick;
+  do {
+    pick = TAGLINES[Math.floor(Math.random() * TAGLINES.length)];
+  } while (TAGLINES.length > 1 && pick === avoid);
+  el.textContent = pick;
+  el.dataset.current = pick;
 }
 
 function init() {
@@ -239,15 +439,22 @@ function init() {
   }
 
   const card = document.getElementById('nextCard');
+  const mascotWrap = document.getElementById('mascotWrap');
   if (next) {
     const isToday = next.d.getTime() === today.getTime();
+    const days = Math.round((next.d.getTime() - today.getTime()) / 86400000);
+    card.style.setProperty('--accent', accentFor(next.recycling, next.black));
     card.innerHTML = `
       ${isToday ? '<div class="today-banner">🚛 IT\'S BIN DAY! Bins out by 6am 🚛</div>' : ''}
       <div class="label">${isToday ? "Today's collection" : "Next collection"}</div>
-      <div class="date">${fmtDate(next.d)}</div>
+      <div class="date-row">
+        <span class="date">${fmtDate(next.d)}</span>
+        <span class="days-chip">${daysChip(days)}</span>
+      </div>
       <div class="bins">${buildBins(next.recycling, next.black)}</div>
       ${next.xmas ? '<div class="warning">⚠ Christmas period — council confirms exact date in December, this may shift</div>' : ''}
     `;
+    mascotWrap.classList.toggle('celebrate', isToday);
     if (isToday) launchConfetti();
   } else {
     card.innerHTML = '<div class="label">No dates loaded</div><div class="date">Calendar ends 25 March 2027</div>';
@@ -264,6 +471,8 @@ function init() {
       <td>${row[2] ? '<span class="bin-icon black">🗑️</span>' : ''}</td>
     </tr>`;
   }).join('');
+
+  setTagline();
 }
 
 function launchConfetti() {
@@ -307,14 +516,15 @@ function launchConfetti() {
   tick();
 }
 
-function spinTitle() {
-  const el = document.getElementById('titleEl');
-  el.classList.remove('spin');
+function wobble(el) {
+  el.classList.remove('spin-wobble');
   void el.offsetWidth;
-  el.classList.add('spin');
+  el.classList.add('spin-wobble');
 }
 
-document.getElementById('titleEl').addEventListener('click', spinTitle);
+document.getElementById('titleEl').addEventListener('click', (e) => wobble(e.currentTarget));
+document.getElementById('mascotWrap').addEventListener('click', (e) => wobble(e.currentTarget));
+document.getElementById('tagline').addEventListener('click', (e) => setTagline(e.currentTarget.dataset.current));
 
 function toggleTable() {
   const wrap = document.getElementById('tableWrap');

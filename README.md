@@ -10,7 +10,12 @@ Installable as a PWA — works offline once added to your home screen.
 - `manifest.json` — Web App Manifest (name, theme colour, icons) for installability
 - `sw.js` — service worker, cache-first for the static shell so it works fully offline once installed
 - `icons/` — app icons (192px / 512px, plus maskable variants for Android adaptive icons)
+- `fonts/` — self-hosted Fredoka variable font (OFL-licensed, see `fonts/OFL.txt`) used for headings and accents; self-hosted rather than CDN-loaded so it still works offline
 - `bindicator-source.ts` — typed reference copy of the schedule data model; not compiled or used at runtime, kept in case this ever moves into a real build pipeline
+
+## Character
+
+Beyond the raw schedule, the app has a bit of personality: a googly-eyed bin mascot (click it, it wiggles), a colour-coded accent bar per collection type, a "days until" chip, a rotating tagline (click to reroll), confetti + a party hat on bin day, and dark mode support.
 
 ## Running locally
 
