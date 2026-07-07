@@ -31,6 +31,7 @@
     --table-bg: #ffffff;
     --border: #eeeeee;
     --accent: var(--purple);
+    --accent-solid: var(--purple);
   }
 
   @media (prefers-color-scheme: dark) {
@@ -151,8 +152,14 @@
     padding: 18px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     margin-bottom: 20px;
-    border-top: 6px solid var(--accent);
-    transition: background 0.3s ease, border-color 0.3s ease;
+    overflow: hidden;
+    transition: background 0.3s ease;
+  }
+  .accent-bar {
+    height: 6px;
+    margin: -18px -18px 14px;
+    background: var(--accent);
+    transition: background 0.3s ease;
   }
   .next-card .label {
     font-size: 0.75rem;
@@ -180,8 +187,8 @@
     font-size: 0.75rem;
     padding: 3px 10px;
     border-radius: 20px;
-    background: color-mix(in srgb, var(--accent) 18%, transparent);
-    color: var(--accent);
+    background: color-mix(in srgb, var(--accent-solid) 18%, transparent);
+    color: var(--accent-solid);
     white-space: nowrap;
   }
   .bins {
@@ -323,8 +330,14 @@
 <div class="header-row">
   <div class="mascot-wrap" id="mascotWrap" title="Boop the bin">
     <svg viewBox="0 -16 100 126" width="56" height="70" aria-hidden="true">
+      <defs>
+        <linearGradient id="mascotGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#6b2d8c"/>
+          <stop offset="100%" stop-color="#6b2d8c"/>
+        </linearGradient>
+      </defs>
       <g class="mascot-bounce">
-        <rect x="14" y="34" width="72" height="62" rx="16" fill="var(--purple)"/>
+        <rect x="14" y="34" width="72" height="62" rx="16" fill="url(#mascotGrad)"/>
         <line x1="35" y1="46" x2="35" y2="86" stroke="rgba(255,255,255,0.35)" stroke-width="3"/>
         <line x1="50" y1="46" x2="50" y2="86" stroke="rgba(255,255,255,0.35)" stroke-width="3"/>
         <line x1="65" y1="46" x2="65" y2="86" stroke="rgba(255,255,255,0.35)" stroke-width="3"/>
@@ -405,11 +418,26 @@ function buildBins(recycling, black) {
   return html;
 }
 
-function accentFor(recycling, black) {
-  if (recycling && black) return 'linear-gradient(90deg, var(--green), var(--black))';
-  if (recycling) return 'var(--green)';
-  if (black) return 'var(--black)';
-  return 'var(--purple)';
+const PALETTE = { purple: '#6b2d8c', green: '#7cb342', black: '#1a1a1a' };
+
+// Food waste goes out every collection, so purple is always the base tone;
+// recycling/black bin colours join the blend on the weeks they're also due.
+function accentStops(recycling, black) {
+  const stops = [PALETTE.purple];
+  if (recycling) stops.push(PALETTE.green);
+  if (black) stops.push(PALETTE.black);
+  return stops;
+}
+
+function gradientCss(stops) {
+  return stops.length === 1 ? stops[0] : `linear-gradient(90deg, ${stops.join(', ')})`;
+}
+
+function setMascotGradient(stops) {
+  const grad = document.getElementById('mascotGrad');
+  grad.innerHTML = stops.length === 1
+    ? `<stop offset="0%" stop-color="${stops[0]}"/><stop offset="100%" stop-color="${stops[0]}"/>`
+    : stops.map((c, i) => `<stop offset="${(i / (stops.length - 1)) * 100}%" stop-color="${c}"/>`).join('');
 }
 
 function daysChip(days) {
@@ -443,8 +471,12 @@ function init() {
   if (next) {
     const isToday = next.d.getTime() === today.getTime();
     const days = Math.round((next.d.getTime() - today.getTime()) / 86400000);
-    card.style.setProperty('--accent', accentFor(next.recycling, next.black));
+    const stops = accentStops(next.recycling, next.black);
+    card.style.setProperty('--accent', gradientCss(stops));
+    card.style.setProperty('--accent-solid', stops[stops.length - 1]);
+    setMascotGradient(stops);
     card.innerHTML = `
+      <div class="accent-bar"></div>
       ${isToday ? '<div class="today-banner">🚛 IT\'S BIN DAY! Bins out by 6am 🚛</div>' : ''}
       <div class="label">${isToday ? "Today's collection" : "Next collection"}</div>
       <div class="date-row">
