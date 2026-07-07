@@ -59,6 +59,7 @@
 
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 17px;
     background: var(--bg);
     margin: 0;
     padding: 16px;
@@ -89,14 +90,15 @@
   .header-row {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 14px;
+    margin-bottom: 16px;
   }
 
   h1 {
     font-family: 'Quicksand', -apple-system, sans-serif;
     font-weight: 600;
-    font-size: 1.5rem;
-    margin: 0 0 4px;
+    font-size: 2rem;
+    margin: 0;
     color: var(--brand);
     cursor: pointer;
     display: inline-block;
@@ -137,18 +139,6 @@
     60%  { transform: rotate(360deg) scale(1.1); }
     100% { transform: rotate(360deg) scale(1); }
   }
-
-  .tagline {
-    font-family: 'Quicksand', sans-serif;
-    font-weight: 500;
-    font-size: 0.9rem;
-    color: var(--orange);
-    margin: 0 0 16px;
-    cursor: pointer;
-    user-select: none;
-  }
-  .tagline:before { content: "✨ "; }
-  .tagline:hover { text-decoration: underline; }
 
   .next-card {
     background: var(--card-bg);
@@ -210,16 +200,16 @@
     font-weight: 600;
   }
   .timeline-item.is-next .timeline-date {
-    font-size: 1.3rem;
+    font-size: 1.6rem;
     color: var(--accent-solid);
   }
   .timeline-item:not(.is-next) .timeline-date {
-    font-size: 0.95rem;
+    font-size: 1.1rem;
     color: var(--subtitle);
     font-weight: 500;
   }
   .timeline-caption {
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: #888;
@@ -237,9 +227,9 @@
   }
   .bin-tag {
     font-family: 'Quicksand', sans-serif;
-    padding: 6px 12px;
+    padding: 7px 14px;
     border-radius: 20px;
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     font-weight: 600;
     color: white;
   }
@@ -248,7 +238,7 @@
   .bin-black { background: var(--black); }
   .warning {
     margin-top: 10px;
-    font-size: 0.8rem;
+    font-size: 0.88rem;
     color: var(--orange);
     font-weight: 600;
   }
@@ -257,9 +247,9 @@
     background: none;
     border: 1px solid var(--brand);
     color: var(--brand);
-    padding: 8px 14px;
+    padding: 9px 16px;
     border-radius: 8px;
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     font-weight: 500;
     cursor: pointer;
     margin-bottom: 12px;
@@ -278,10 +268,10 @@
     background: var(--table-bg);
     border-radius: 8px;
     overflow: hidden;
-    font-size: 0.85rem;
+    font-size: 0.95rem;
   }
   th, td {
-    padding: 8px 6px;
+    padding: 9px 6px;
     text-align: center;
     border-bottom: 1px solid var(--border);
     color: var(--text);
@@ -290,7 +280,7 @@
     font-family: 'Quicksand', sans-serif;
     background: var(--brand);
     color: var(--brand-contrast);
-    font-size: 0.75rem;
+    font-size: 0.82rem;
   }
   td:first-child, th:first-child {
     text-align: left;
@@ -306,10 +296,10 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 26px;
-    height: 26px;
-    border-radius: 6px;
-    font-size: 0.9rem;
+    width: 30px;
+    height: 30px;
+    border-radius: 7px;
+    font-size: 1.05rem;
     transition: transform 0.2s ease;
     cursor: default;
   }
@@ -368,7 +358,7 @@
 
 <div class="header-row">
   <div class="mascot-wrap" id="mascotWrap" role="button" tabindex="0" aria-label="Boop the bin">
-    <svg viewBox="0 -16 100 126" width="56" height="70" aria-hidden="true">
+    <svg viewBox="0 -16 100 126" width="68" height="86" aria-hidden="true">
       <defs>
         <linearGradient id="mascotGrad" x1="0" y1="0" x2="1" y2="0">
           <stop offset="0%" stop-color="#6b2d8c"/>
@@ -401,7 +391,6 @@
   </div>
   <h1 id="titleEl" role="button" tabindex="0" aria-label="The Bindicator (wobble it)">The Bindicator</h1>
 </div>
-<p class="tagline" id="tagline" role="button" tabindex="0" aria-label="Show another tagline"></p>
 <canvas id="confettiCanvas"></canvas>
 
 <div class="next-card" id="nextCard"></div>
@@ -434,17 +423,6 @@ const data = [
   ["2027-03-04",0,1,0],["2027-03-11",1,0,0],["2027-03-18",0,0,0],["2027-03-25",1,1,0]
 ];
 
-const TAGLINES = [
-  "Bin there, done that.",
-  "Trash talk, but make it useful.",
-  "Rubbish timing? Not on our watch.",
-  "Your neighbourhood's finest waste oracle.",
-  "Keeping curbs classy since day one.",
-  "May your bins always be where they belong.",
-  "Wheelie good at this, if we do say so.",
-  "Zero excuses for a missed collection.",
-];
-
 function fmtDate(d) {
   return d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
 }
@@ -460,12 +438,22 @@ function buildBins(recycling, black) {
   return html;
 }
 
-const PALETTE = { green: '#7cb342', black: '#1a1a1a', neutral: '#5b6472' };
+// The black bin's brand colour is near-black, which reads fine as a solid
+// badge (white-on-black) but nearly disappears as accent text/dot on the
+// dark-mode card background — so the accent (not the badge) swaps to a
+// lighter grey in dark mode to stay legible.
+const PALETTE_LIGHT = { green: '#7cb342', black: '#1a1a1a', neutral: '#5b6472' };
+const PALETTE_DARK = { green: '#7cb342', black: '#aeb6c2', neutral: '#9aa5b3' };
+
+function getPalette() {
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? PALETTE_DARK : PALETTE_LIGHT;
+}
 
 // Food waste goes out every collection, so it isn't informative as an accent
 // colour — the accent instead highlights whichever *extra* bins are due this
 // week (recycling/black), falling back to a plain neutral on food-only weeks.
 function accentStops(recycling, black) {
+  const PALETTE = getPalette();
   const stops = [];
   if (recycling) stops.push(PALETTE.green);
   if (black) stops.push(PALETTE.black);
@@ -516,16 +504,6 @@ function buildTimelineItem(entry, isNext, today) {
     </div>`;
 }
 
-function setTagline(avoid) {
-  const el = document.getElementById('tagline');
-  let pick;
-  do {
-    pick = TAGLINES[Math.floor(Math.random() * TAGLINES.length)];
-  } while (TAGLINES.length > 1 && pick === avoid);
-  el.textContent = pick;
-  el.dataset.current = pick;
-}
-
 function init() {
   const today = new Date();
   today.setHours(0,0,0,0);
@@ -572,8 +550,6 @@ function init() {
       <td>${row[2] ? '<span class="bin-icon black">🗑️</span>' : ''}</td>
     </tr>`;
   }).join('');
-
-  setTagline();
 }
 
 function launchConfetti() {
@@ -636,7 +612,6 @@ function onActivate(el, handler) {
 
 onActivate(document.getElementById('titleEl'), wobble);
 onActivate(document.getElementById('mascotWrap'), wobble);
-onActivate(document.getElementById('tagline'), (el) => setTagline(el.dataset.current));
 
 function toggleTable() {
   const wrap = document.getElementById('tableWrap');
