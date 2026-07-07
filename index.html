@@ -243,14 +243,32 @@
     color: var(--orange);
     font-weight: 600;
   }
+  .icon-key {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 12px;
+    font-size: 0.82rem;
+    color: var(--subtitle);
+  }
+  .icon-key-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .icon-key-item img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+  }
   .toggle-btn {
     font-family: 'Quicksand', sans-serif;
     background: none;
     border: 1px solid var(--brand);
     color: var(--brand);
-    padding: 9px 16px;
+    padding: 7px 14px;
     border-radius: 8px;
-    font-size: 0.95rem;
+    font-size: 0.85rem;
     font-weight: 500;
     cursor: pointer;
     margin-bottom: 12px;
@@ -272,14 +290,14 @@
     font-size: 0.95rem;
   }
   th, td {
-    padding: 9px 6px;
+    padding: 7px 6px;
     text-align: center;
     border-bottom: 1px solid var(--border);
     color: var(--text);
   }
   th {
     font-family: 'Quicksand', sans-serif;
-    background: var(--brand);
+    background: color-mix(in srgb, var(--brand) 80%, var(--purple) 20%);
     color: var(--brand-contrast);
     font-size: 0.82rem;
   }
@@ -297,8 +315,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 30px;
-    height: 30px;
+    width: 26px;
+    height: 26px;
     transition: transform 0.2s ease;
     cursor: default;
   }
@@ -367,7 +385,13 @@
 
 <div class="next-card" id="nextCard"></div>
 
-<button class="toggle-btn" onclick="toggleTable()">Show full calendar ▾</button>
+<div class="icon-key">
+  <span class="icon-key-item"><img src="characters/food-icon.png" alt="">Food waste</span>
+  <span class="icon-key-item"><img src="characters/recycling-icon.png" alt="">Recycling &amp; garden</span>
+  <span class="icon-key-item"><img src="characters/black-icon.png" alt="">Black bin</span>
+</div>
+
+<button class="toggle-btn" onclick="toggleTable()">Show all dates ▾</button>
 <div id="tableWrap">
   <table>
     <thead>
@@ -592,7 +616,7 @@ function toggleTable() {
   const btn = document.querySelector('.toggle-btn');
   const showing = wrap.style.display === 'block';
   wrap.style.display = showing ? 'none' : 'block';
-  btn.textContent = showing ? 'Show full calendar ▾' : 'Hide full calendar ▴';
+  btn.textContent = showing ? 'Show all dates ▾' : 'Hide all dates ▴';
 }
 
 init();

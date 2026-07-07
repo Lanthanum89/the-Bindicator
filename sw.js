@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "bindicator-";
-const CACHE_NAME = `${CACHE_PREFIX}shell-v6`;
+const CACHE_NAME = `${CACHE_PREFIX}shell-v7`;
 const SHELL_FILES = [
   "./",
   "./index.html",
