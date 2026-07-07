@@ -115,7 +115,21 @@
     display: flex;
     align-items: center;
     gap: 14px;
+    margin-bottom: 12px;
+  }
+
+  .week-progress {
+    height: 6px;
+    border-radius: 999px;
+    background: var(--border);
     margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .week-progress-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: var(--brand);
+    transition: width 0.3s ease, background 0.3s ease;
   }
 
   .theme-toggle {
@@ -429,6 +443,9 @@
   <h1 id="titleEl" role="button" tabindex="0" aria-label="The Bindicator (wobble it)">The Bindicator</h1>
   <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light mode" title="Toggle dark/light mode">🌙</button>
 </div>
+<div class="week-progress" id="weekProgress" role="progressbar" aria-label="Progress through the week to bin day" aria-valuemin="0" aria-valuemax="100">
+  <div class="week-progress-fill" id="weekProgressFill"></div>
+</div>
 <canvas id="confettiCanvas"></canvas>
 
 <div class="next-card" id="nextCard"></div>
@@ -555,6 +572,24 @@ function nextCaption(days) {
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
+// Collections are always Thursday, so treat Friday 00:00 as the start of a
+// fresh week-long countdown that fills up smoothly to 100% by the end of
+// Thursday, then snaps back to 0% the moment Friday begins.
+function weekProgress(now) {
+  const daysSinceFriday = (now.getDay() - 5 + 7) % 7; // Friday = 0
+  const cycleStart = new Date(now);
+  cycleStart.setHours(0, 0, 0, 0);
+  cycleStart.setDate(cycleStart.getDate() - daysSinceFriday);
+  const elapsed = now.getTime() - cycleStart.getTime();
+  return Math.min(1, Math.max(0, elapsed / (7 * MS_PER_DAY)));
+}
+
+function updateWeekProgress() {
+  const percent = Math.round(weekProgress(new Date()) * 100);
+  document.getElementById('weekProgressFill').style.width = `${percent}%`;
+  document.getElementById('weekProgress').setAttribute('aria-valuenow', percent);
+}
+
 function buildTimelineItem(entry, isNext, today) {
   if (isNext) {
     const days = Math.round((entry.d.getTime() - today.getTime()) / MS_PER_DAY);
@@ -582,6 +617,8 @@ function buildTimelineItem(entry, isNext, today) {
 function init() {
   const today = new Date();
   today.setHours(0,0,0,0);
+
+  updateWeekProgress();
 
   const upcoming = [];
   for (const row of data) {
@@ -615,7 +652,7 @@ function init() {
   }
 
   const tbody = document.getElementById('tableBody');
-  tbody.innerHTML = data.map(row => {
+  tbody.innerHTML = data.filter(row => new Date(row[0] + 'T00:00:00') >= today).map(row => {
     const d = new Date(row[0] + 'T00:00:00');
     const isToday = d.getTime() === today.getTime();
     return `<tr class="${isToday ? 'today-row' : ''} ${row[3] ? 'orange-row' : ''}">
