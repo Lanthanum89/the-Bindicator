@@ -427,7 +427,7 @@
     <img id="mascotImg" src="characters/food-full.png" alt="">
   </div>
   <h1 id="titleEl" role="button" tabindex="0" aria-label="The Bindicator (wobble it)">The Bindicator</h1>
-  <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light mode" title="Toggle dark/light mode">🌙</button>
+  <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light mode" title="Toggle dark/light mode">🌙</button>
 </div>
 <canvas id="confettiCanvas"></canvas>
 
@@ -439,7 +439,7 @@
   <span class="icon-key-item"><img src="characters/black-icon.png" alt="">Black bin</span>
 </div>
 
-<button class="toggle-btn" onclick="toggleTable()">Show all dates ▾</button>
+<button type="button" class="toggle-btn" onclick="toggleTable()">Show all dates ▾</button>
 <div id="tableWrap">
   <table>
     <thead>
@@ -491,11 +491,29 @@ const PALETTE_DARK = { green: '#7cb342', black: '#aeb6c2', neutral: '#9aa5b3' };
 
 const THEME_KEY = 'bindicator-theme';
 
+// localStorage access can throw (private browsing, storage disabled, etc.),
+// so reads/writes go through these rather than touching it directly.
+function readStoredTheme() {
+  try {
+    return localStorage.getItem(THEME_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function writeStoredTheme(theme) {
+  try {
+    localStorage.setItem(THEME_KEY, theme);
+  } catch {
+    // Persistence is a nice-to-have; the toggle still works for this session.
+  }
+}
+
 // The user's explicit toggle choice (if any) wins over the OS-level
 // prefers-color-scheme, so every theme-aware bit of JS reads through here
 // rather than checking matchMedia directly.
 function currentTheme() {
-  const saved = localStorage.getItem(THEME_KEY);
+  const saved = readStoredTheme();
   if (saved === 'dark' || saved === 'light') return saved;
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
@@ -687,7 +705,7 @@ function applyTheme(theme) {
 
 function toggleTheme() {
   const next = currentTheme() === 'dark' ? 'light' : 'dark';
-  localStorage.setItem(THEME_KEY, next);
+  writeStoredTheme(next);
   applyTheme(next);
   init(); // recompute accent colours, which depend on the active theme
 }
