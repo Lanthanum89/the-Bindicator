@@ -9,7 +9,8 @@ Installable as a PWA — works offline once added to your home screen.
 - `index.html` — the whole app: markup, styles, and logic in one self-contained file (no build step, no dependencies)
 - `manifest.json` — Web App Manifest (name, theme colour, icons) for installability
 - `sw.js` — service worker, cache-first for the static shell so it works fully offline once installed
-- `icons/` — app icons (192px / 512px, plus maskable variants for Android adaptive icons)
+- `icons/` — app icons (192px / 512px, plus maskable variants for Android adaptive icons), derived from the mascot artwork in `graphics/`
+- `graphics/mascot-hero.png` — the full mascot illustration (with wordmark), used as the social share preview (`og:image`); the app icons are a cropped, full-bleed, text-free derivative of this same artwork
 - `fonts/` — self-hosted Fredoka variable font (OFL-licensed, see `fonts/OFL.txt`) used for headings and accents; self-hosted rather than CDN-loaded so it still works offline
 - `bindicator-source.ts` — typed reference copy of the schedule data model; not compiled or used at runtime, kept in case this ever moves into a real build pipeline
 
