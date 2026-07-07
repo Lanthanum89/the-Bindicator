@@ -16,9 +16,17 @@
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <style>
   @font-face {
-    font-family: 'Quicksand';
-    src: url('fonts/quicksand-variable.woff2') format('woff2-variations'),
-         url('fonts/quicksand-variable.woff2') format('woff2');
+    font-family: 'Fredoka';
+    src: url('fonts/fredoka-variable.woff2') format('woff2-variations'),
+         url('fonts/fredoka-variable.woff2') format('woff2');
+    font-weight: 300 700;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Nunito Sans';
+    src: url('fonts/nunito-sans-variable.woff2') format('woff2-variations'),
+         url('fonts/nunito-sans-variable.woff2') format('woff2');
     font-weight: 300 700;
     font-style: normal;
     font-display: swap;
@@ -149,8 +157,8 @@
   }
 
   h1 {
-    font-family: 'Quicksand', -apple-system, sans-serif;
-    font-weight: 600;
+    font-family: 'Fredoka', -apple-system, sans-serif;
+    font-weight: 700;
     font-size: 2rem;
     margin: 0;
     color: var(--brand);
@@ -242,7 +250,7 @@
     box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent-solid) 20%, transparent);
   }
   .hero-clock {
-    font-family: 'Quicksand', sans-serif;
+    font-family: 'Nunito Sans', sans-serif;
     font-size: 0.9rem;
     color: var(--subtitle);
     margin-bottom: 8px;
@@ -276,7 +284,7 @@
     transition: border-color 0.3s ease;
   }
   .timeline-date {
-    font-family: 'Quicksand', sans-serif;
+    font-family: 'Nunito Sans', sans-serif;
     font-weight: 600;
   }
   .timeline-item.is-next .timeline-date {
@@ -290,9 +298,11 @@
     font-weight: 500;
   }
   .timeline-caption {
+    font-family: 'Nunito Sans', sans-serif;
     font-size: 0.8rem;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.08em;
     color: #888;
     margin: 2px 0 8px;
   }
@@ -307,7 +317,7 @@
     flex-wrap: wrap;
   }
   .bin-tag {
-    font-family: 'Quicksand', sans-serif;
+    font-family: 'Nunito Sans', sans-serif;
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -337,7 +347,9 @@
     flex-wrap: wrap;
     gap: 14px;
     margin-bottom: 12px;
+    font-family: 'Nunito Sans', sans-serif;
     font-size: 0.82rem;
+    font-weight: 600;
     color: var(--subtitle);
   }
   .icon-key-item {
@@ -351,14 +363,14 @@
     object-fit: contain;
   }
   .toggle-btn {
-    font-family: 'Quicksand', sans-serif;
+    font-family: 'Nunito Sans', sans-serif;
     background: none;
     border: 1px solid var(--brand);
     color: var(--brand);
     padding: 7px 14px;
     border-radius: 8px;
     font-size: 0.85rem;
-    font-weight: 500;
+    font-weight: 700;
     cursor: pointer;
     margin-bottom: 12px;
     transition: transform 0.15s ease, background 0.15s ease;
@@ -385,7 +397,7 @@
     color: var(--text);
   }
   th {
-    font-family: 'Quicksand', sans-serif;
+    font-family: 'Nunito Sans', sans-serif;
     background: color-mix(in srgb, var(--brand) 80%, var(--purple) 20%);
     color: var(--brand-contrast);
     font-size: 0.82rem;
@@ -430,7 +442,7 @@
   }
 
   .today-banner {
-    font-family: 'Quicksand', sans-serif;
+    font-family: 'Nunito Sans', sans-serif;
     background: var(--orange);
     color: white;
     font-weight: 600;
