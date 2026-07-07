@@ -16,9 +16,9 @@
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <style>
   @font-face {
-    font-family: 'Fredoka';
-    src: url('fonts/fredoka-variable.woff2') format('woff2-variations'),
-         url('fonts/fredoka-variable.woff2') format('woff2');
+    font-family: 'Quicksand';
+    src: url('fonts/quicksand-variable.woff2') format('woff2-variations'),
+         url('fonts/quicksand-variable.woff2') format('woff2');
     font-weight: 300 700;
     font-style: normal;
     font-display: swap;
@@ -29,18 +29,21 @@
     --green: #7cb342;
     --black: #1a1a1a;
     --orange: #e8720c;
+    --neutral: #5b6472;
+    --brand: #48505c;
     --bg: #f4f2f6;
     --card-bg: #ffffff;
     --text: #222222;
     --subtitle: #666666;
     --table-bg: #ffffff;
     --border: #eeeeee;
-    --accent: var(--purple);
-    --accent-solid: var(--purple);
+    --accent: var(--neutral);
+    --accent-solid: var(--neutral);
   }
 
   @media (prefers-color-scheme: dark) {
     :root {
+      --brand: #aeb6c2;
       --bg: #17121e;
       --card-bg: #241c2e;
       --text: #f2eef7;
@@ -88,11 +91,11 @@
   }
 
   h1 {
-    font-family: 'Fredoka', -apple-system, sans-serif;
+    font-family: 'Quicksand', -apple-system, sans-serif;
     font-weight: 600;
     font-size: 1.5rem;
     margin: 0 0 4px;
-    color: var(--purple);
+    color: var(--brand);
     cursor: pointer;
     display: inline-block;
     user-select: none;
@@ -133,14 +136,8 @@
     100% { transform: rotate(360deg) scale(1); }
   }
 
-  .subtitle {
-    font-size: 0.85rem;
-    color: var(--subtitle);
-    margin-bottom: 4px;
-  }
-
   .tagline {
-    font-family: 'Fredoka', sans-serif;
+    font-family: 'Quicksand', sans-serif;
     font-weight: 500;
     font-size: 0.9rem;
     color: var(--orange);
@@ -166,35 +163,70 @@
     background: var(--accent);
     transition: background 0.3s ease;
   }
-  .next-card .label {
+  .timeline {
+    position: relative;
+    padding-left: 22px;
+  }
+  .timeline-item {
+    position: relative;
+    padding-bottom: 22px;
+  }
+  .timeline-item:last-child {
+    padding-bottom: 0;
+  }
+  .timeline-item::after {
+    content: "";
+    position: absolute;
+    left: -17px;
+    top: 18px;
+    bottom: -4px;
+    width: 2px;
+    background: var(--border);
+  }
+  .timeline-item:last-child::after {
+    display: none;
+  }
+  .timeline-dot {
+    position: absolute;
+    left: -22px;
+    top: 6px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--border);
+  }
+  .timeline-item.is-next .timeline-dot {
+    width: 16px;
+    height: 16px;
+    left: -24px;
+    top: 2px;
+    background: var(--accent-solid);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent-solid) 20%, transparent);
+  }
+  .timeline-date {
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 600;
+  }
+  .timeline-item.is-next .timeline-date {
+    font-size: 1.3rem;
+    color: var(--accent-solid);
+  }
+  .timeline-item:not(.is-next) .timeline-date {
+    font-size: 0.95rem;
+    color: var(--subtitle);
+    font-weight: 500;
+  }
+  .timeline-caption {
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: #888;
-    margin-bottom: 6px;
+    margin: 2px 0 8px;
   }
-  .next-card .date-row {
+  .timeline-icons {
     display: flex;
-    align-items: baseline;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-bottom: 10px;
-  }
-  .next-card .date {
-    font-family: 'Fredoka', sans-serif;
-    font-weight: 600;
-    font-size: 1.4rem;
-    color: var(--purple);
-  }
-  .days-chip {
-    font-family: 'Fredoka', sans-serif;
-    font-weight: 600;
-    font-size: 0.75rem;
-    padding: 3px 10px;
-    border-radius: 20px;
-    background: color-mix(in srgb, var(--accent-solid) 18%, transparent);
-    color: var(--accent-solid);
-    white-space: nowrap;
+    gap: 6px;
+    margin-top: 6px;
   }
   .bins {
     display: flex;
@@ -202,7 +234,7 @@
     flex-wrap: wrap;
   }
   .bin-tag {
-    font-family: 'Fredoka', sans-serif;
+    font-family: 'Quicksand', sans-serif;
     padding: 6px 12px;
     border-radius: 20px;
     font-size: 0.85rem;
@@ -219,10 +251,10 @@
     font-weight: 600;
   }
   .toggle-btn {
-    font-family: 'Fredoka', sans-serif;
+    font-family: 'Quicksand', sans-serif;
     background: none;
-    border: 1px solid var(--purple);
-    color: var(--purple);
+    border: 1px solid var(--brand);
+    color: var(--brand);
     padding: 8px 14px;
     border-radius: 8px;
     font-size: 0.85rem;
@@ -232,7 +264,7 @@
     transition: transform 0.15s ease, background 0.15s ease;
   }
   .toggle-btn:hover {
-    background: var(--purple);
+    background: var(--brand);
     color: white;
     transform: translateY(-1px);
   }
@@ -253,8 +285,8 @@
     color: var(--text);
   }
   th {
-    font-family: 'Fredoka', sans-serif;
-    background: var(--purple);
+    font-family: 'Quicksand', sans-serif;
+    background: var(--brand);
     color: white;
     font-size: 0.75rem;
   }
@@ -263,7 +295,7 @@
     padding-left: 10px;
   }
   .today-row {
-    background: color-mix(in srgb, var(--purple) 12%, var(--table-bg));
+    background: color-mix(in srgb, var(--brand) 12%, var(--table-bg));
     font-weight: 700;
   }
   .orange-row td:first-child { color: var(--orange); }
@@ -298,7 +330,7 @@
   }
 
   .today-banner {
-    font-family: 'Fredoka', sans-serif;
+    font-family: 'Quicksand', sans-serif;
     background: var(--orange);
     color: white;
     font-weight: 600;
@@ -351,8 +383,8 @@
         <circle cx="62" cy="58" r="11" fill="#fff"/>
         <circle cx="38" cy="58" r="5" fill="#1a1a1a"/>
         <circle cx="62" cy="58" r="5" fill="#1a1a1a"/>
-        <rect class="mascot-eyelid" x="27" y="47" width="22" height="22" fill="var(--purple)"/>
-        <rect class="mascot-eyelid" x="51" y="47" width="22" height="22" fill="var(--purple)"/>
+        <rect class="mascot-eyelid" x="27" y="47" width="22" height="22" fill="var(--neutral)"/>
+        <rect class="mascot-eyelid" x="51" y="47" width="22" height="22" fill="var(--neutral)"/>
         <ellipse cx="30" cy="72" rx="5" ry="3" fill="#ff9fc2" opacity="0.5"/>
         <ellipse cx="70" cy="72" rx="5" ry="3" fill="#ff9fc2" opacity="0.5"/>
         <path d="M42 78 Q50 86 58 78" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round"/>
@@ -367,7 +399,6 @@
   </div>
   <h1 id="titleEl" role="button" tabindex="0" aria-label="The Bindicator (wobble it)">The Bindicator</h1>
 </div>
-<div class="subtitle">West Berkshire · Schedule 1 Thursday · never miss bin day again</div>
 <p class="tagline" id="tagline" role="button" tabindex="0" aria-label="Show another tagline"></p>
 <canvas id="confettiCanvas"></canvas>
 
@@ -416,6 +447,10 @@ function fmtDate(d) {
   return d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
 }
 
+function fmtDateShort(d) {
+  return d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'long' });
+}
+
 function buildBins(recycling, black) {
   let html = '<span class="bin-tag bin-food">🍎 Food waste</span>';
   if (recycling) html += '<span class="bin-tag bin-recycling">♻️ Recycling &amp; garden</span>';
@@ -423,14 +458,16 @@ function buildBins(recycling, black) {
   return html;
 }
 
-const PALETTE = { purple: '#6b2d8c', green: '#7cb342', black: '#1a1a1a' };
+const PALETTE = { green: '#7cb342', black: '#1a1a1a', neutral: '#5b6472' };
 
-// Food waste goes out every collection, so purple is always the base tone;
-// recycling/black bin colours join the blend on the weeks they're also due.
+// Food waste goes out every collection, so it isn't informative as an accent
+// colour — the accent instead highlights whichever *extra* bins are due this
+// week (recycling/black), falling back to a plain neutral on food-only weeks.
 function accentStops(recycling, black) {
-  const stops = [PALETTE.purple];
+  const stops = [];
   if (recycling) stops.push(PALETTE.green);
   if (black) stops.push(PALETTE.black);
+  if (stops.length === 0) stops.push(PALETTE.neutral);
   return stops;
 }
 
@@ -445,10 +482,35 @@ function setMascotGradient(stops) {
     : stops.map((c, i) => `<stop offset="${(i / (stops.length - 1)) * 100}%" stop-color="${c}"/>`).join('');
 }
 
-function daysChip(days) {
-  if (days === 0) return "Today!";
-  if (days === 1) return "Tomorrow";
-  return `In ${days} days`;
+function nextCaption(days) {
+  if (days === 0) return "Today · next up";
+  if (days === 1) return "Tomorrow · next up";
+  return `In ${days} days · next up`;
+}
+
+function buildTimelineItem(entry, isNext, today) {
+  if (isNext) {
+    const isToday = entry.d.getTime() === today.getTime();
+    const days = Math.round((entry.d.getTime() - today.getTime()) / 86400000);
+    return `
+      <div class="timeline-item is-next">
+        <span class="timeline-dot"></span>
+        <div class="timeline-date">${fmtDateShort(entry.d)}</div>
+        <div class="timeline-caption">${nextCaption(days)}</div>
+        <div class="bins">${buildBins(entry.recycling, entry.black)}</div>
+        ${entry.xmas ? '<div class="warning">⚠ Christmas period — council confirms exact date in December, this may shift</div>' : ''}
+      </div>`;
+  }
+  return `
+    <div class="timeline-item">
+      <span class="timeline-dot"></span>
+      <div class="timeline-date">${fmtDateShort(entry.d)}</div>
+      <div class="timeline-icons">
+        <span class="bin-icon food">🍎</span>
+        ${entry.recycling ? '<span class="bin-icon recycling">♻️</span>' : ''}
+        ${entry.black ? '<span class="bin-icon black">🗑️</span>' : ''}
+      </div>
+    </div>`;
 }
 
 function setTagline(avoid) {
@@ -465,17 +527,20 @@ function init() {
   const today = new Date();
   today.setHours(0,0,0,0);
 
-  let next = null;
+  const upcoming = [];
   for (const row of data) {
     const d = new Date(row[0] + 'T00:00:00');
-    if (d >= today) { next = { d, recycling: row[1], black: row[2], xmas: row[3] }; break; }
+    if (d >= today) {
+      upcoming.push({ d, recycling: row[1], black: row[2], xmas: row[3] });
+      if (upcoming.length === 3) break;
+    }
   }
 
   const card = document.getElementById('nextCard');
   const mascotWrap = document.getElementById('mascotWrap');
-  if (next) {
+  if (upcoming.length) {
+    const next = upcoming[0];
     const isToday = next.d.getTime() === today.getTime();
-    const days = Math.round((next.d.getTime() - today.getTime()) / 86400000);
     const stops = accentStops(next.recycling, next.black);
     card.style.setProperty('--accent', gradientCss(stops));
     card.style.setProperty('--accent-solid', stops[stops.length - 1]);
@@ -483,18 +548,14 @@ function init() {
     card.innerHTML = `
       <div class="accent-bar"></div>
       ${isToday ? '<div class="today-banner">🚛 IT\'S BIN DAY! Bins out by 6am 🚛</div>' : ''}
-      <div class="label">${isToday ? "Today's collection" : "Next collection"}</div>
-      <div class="date-row">
-        <span class="date">${fmtDate(next.d)}</span>
-        <span class="days-chip">${daysChip(days)}</span>
+      <div class="timeline">
+        ${upcoming.map((entry, i) => buildTimelineItem(entry, i === 0, today)).join('')}
       </div>
-      <div class="bins">${buildBins(next.recycling, next.black)}</div>
-      ${next.xmas ? '<div class="warning">⚠ Christmas period — council confirms exact date in December, this may shift</div>' : ''}
     `;
     mascotWrap.classList.toggle('celebrate', isToday);
     if (isToday) launchConfetti();
   } else {
-    card.innerHTML = '<div class="label">No dates loaded</div><div class="date">Calendar ends 25 March 2027</div>';
+    card.innerHTML = '<div class="timeline-caption">No dates loaded</div><div class="timeline-date">Calendar ends 25 March 2027</div>';
   }
 
   const tbody = document.getElementById('tableBody');

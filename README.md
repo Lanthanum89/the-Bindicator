@@ -11,12 +11,14 @@ Installable as a PWA — works offline once added to your home screen.
 - `sw.js` — service worker, cache-first for the static shell so it works fully offline once installed
 - `icons/` — app icons (192px / 512px, plus maskable variants for Android adaptive icons), derived from the mascot artwork in `graphics/`
 - `graphics/mascot-hero.png` — the full mascot illustration (with wordmark), used as the social share preview (`og:image`); the app icons are a cropped, full-bleed, text-free derivative of this same artwork
-- `fonts/` — self-hosted Fredoka variable font (OFL-licensed, see `fonts/OFL.txt`) used for headings and accents; self-hosted rather than CDN-loaded so it still works offline
+- `fonts/` — self-hosted Quicksand variable font (OFL-licensed, see `fonts/OFL.txt`) used for headings and accents; self-hosted rather than CDN-loaded so it still works offline
 - `bindicator-source.ts` — typed reference copy of the schedule data model; not compiled or used at runtime, kept in case this ever moves into a real build pipeline
 
 ## Character
 
-Beyond the raw schedule, the app has a bit of personality: a googly-eyed bin mascot (click it, it wiggles), a colour-coded accent bar per collection type, a "days until" chip, a rotating tagline (click to reroll), confetti + a party hat on bin day, and dark mode support.
+Beyond the raw schedule, the app has a bit of personality: a googly-eyed bin mascot (click it, it wiggles), a vertical timeline of the next three collections, a rotating tagline (click to reroll), confetti + a party hat on bin day, and dark mode support.
+
+Food waste is collected every week, so it isn't useful as an accent colour — purple is reserved for the food-waste badge itself. The timeline's accent (top bar, dot, mascot gradient) instead highlights whichever *extra* bins are due: green for recycling, black for the black bin, a green→black gradient when both are due, and a neutral grey on plain food-only weeks.
 
 ## Running locally
 
