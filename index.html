@@ -333,7 +333,7 @@
 <body>
 
 <div class="header-row">
-  <div class="mascot-wrap" id="mascotWrap" title="Boop the bin">
+  <div class="mascot-wrap" id="mascotWrap" role="button" tabindex="0" aria-label="Boop the bin">
     <svg viewBox="0 -16 100 126" width="56" height="70" aria-hidden="true">
       <defs>
         <linearGradient id="mascotGrad" x1="0" y1="0" x2="1" y2="0">
@@ -365,10 +365,10 @@
       </g>
     </svg>
   </div>
-  <h1 id="titleEl">The Bindicator</h1>
+  <h1 id="titleEl" role="button" tabindex="0" aria-label="The Bindicator (wobble it)">The Bindicator</h1>
 </div>
 <div class="subtitle">West Berkshire · Schedule 1 Thursday · never miss bin day again</div>
-<p class="tagline" id="tagline"></p>
+<p class="tagline" id="tagline" role="button" tabindex="0" aria-label="Show another tagline"></p>
 <canvas id="confettiCanvas"></canvas>
 
 <div class="next-card" id="nextCard"></div>
@@ -513,6 +513,7 @@ function init() {
 }
 
 function launchConfetti() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   const canvas = document.getElementById('confettiCanvas');
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
@@ -559,9 +560,19 @@ function wobble(el) {
   el.classList.add('spin-wobble');
 }
 
-document.getElementById('titleEl').addEventListener('click', (e) => wobble(e.currentTarget));
-document.getElementById('mascotWrap').addEventListener('click', (e) => wobble(e.currentTarget));
-document.getElementById('tagline').addEventListener('click', (e) => setTagline(e.currentTarget.dataset.current));
+function onActivate(el, handler) {
+  el.addEventListener('click', (e) => handler(e.currentTarget));
+  el.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handler(e.currentTarget);
+    }
+  });
+}
+
+onActivate(document.getElementById('titleEl'), wobble);
+onActivate(document.getElementById('mascotWrap'), wobble);
+onActivate(document.getElementById('tagline'), (el) => setTagline(el.dataset.current));
 
 function toggleTable() {
   const wrap = document.getElementById('tableWrap');
