@@ -31,6 +31,7 @@
     --orange: #e8720c;
     --neutral: #5b6472;
     --brand: #48505c;
+    --brand-contrast: #ffffff;
     --bg: #f4f2f6;
     --card-bg: #ffffff;
     --text: #222222;
@@ -44,6 +45,7 @@
   @media (prefers-color-scheme: dark) {
     :root {
       --brand: #aeb6c2;
+      --brand-contrast: #1a1626;
       --bg: #17121e;
       --card-bg: #241c2e;
       --text: #f2eef7;
@@ -265,7 +267,7 @@
   }
   .toggle-btn:hover {
     background: var(--brand);
-    color: white;
+    color: var(--brand-contrast);
     transform: translateY(-1px);
   }
   .toggle-btn:active { transform: translateY(0) scale(0.97); }
@@ -287,7 +289,7 @@
   th {
     font-family: 'Quicksand', sans-serif;
     background: var(--brand);
-    color: white;
+    color: var(--brand-contrast);
     font-size: 0.75rem;
   }
   td:first-child, th:first-child {
@@ -488,10 +490,11 @@ function nextCaption(days) {
   return `In ${days} days · next up`;
 }
 
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
 function buildTimelineItem(entry, isNext, today) {
   if (isNext) {
-    const isToday = entry.d.getTime() === today.getTime();
-    const days = Math.round((entry.d.getTime() - today.getTime()) / 86400000);
+    const days = Math.round((entry.d.getTime() - today.getTime()) / MS_PER_DAY);
     return `
       <div class="timeline-item is-next">
         <span class="timeline-dot"></span>
