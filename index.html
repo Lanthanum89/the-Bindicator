@@ -256,37 +256,50 @@
     margin-bottom: 14px;
   }
   .hero-progress-rail {
+    position: relative;
     flex-shrink: 0;
-    width: 52px;
+    width: 34px;
     height: 130px;
   }
-  .hero-progress-rail svg {
-    width: 100%;
-    height: 100%;
-    display: block;
-    overflow: visible;
-  }
   .hpr-track {
-    fill: none;
-    stroke: var(--border);
-    stroke-width: 4;
-    stroke-linecap: round;
+    position: absolute;
+    left: 50%;
+    top: 8px;
+    height: 108px;
+    width: 2px;
+    background: var(--border);
+    transform: translateX(-50%);
   }
   .hpr-fill {
-    fill: none;
-    stroke: var(--accent-solid);
-    stroke-width: 4;
-    stroke-linecap: round;
-    transition: stroke-dashoffset 0.4s ease, stroke 0.3s ease;
+    position: absolute;
+    left: 50%;
+    top: 8px;
+    width: 2px;
+    background: var(--accent-solid);
+    transform: translateX(-50%);
+    transition: height 0.4s ease, background 0.3s ease;
   }
   .hpr-enddot {
-    fill: var(--accent-solid);
-    stroke: var(--card-bg);
-    stroke-width: 3;
-    transition: fill 0.3s ease;
+    position: absolute;
+    left: 50%;
+    top: 116px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--accent-solid);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent-solid) 20%, transparent);
+    transform: translate(-50%, -50%);
+    transition: background 0.3s ease;
   }
   .hpr-mascot {
+    position: absolute;
+    left: 50%;
+    top: 8px;
+    width: 28px;
+    height: 28px;
+    transform: translate(-50%, -50%);
     filter: drop-shadow(0 1px 3px rgba(0,0,0,0.3));
+    transition: top 0.4s ease;
   }
   .hero-progress-text {
     flex: 1;
@@ -671,19 +684,15 @@ function updateWeekProgress() {
   const barEl = document.getElementById('weekProgress');
   if (barEl) barEl.setAttribute('aria-valuenow', percent);
 
-  const fillPath = document.getElementById('hprFill');
+  // Matches the .hpr-track CSS: top offset 8px, track height 108px.
+  const RAIL_TOP = 8;
+  const RAIL_TRACK_HEIGHT = 108;
+  const filledPx = RAIL_TRACK_HEIGHT * fraction;
+
+  const fillEl = document.getElementById('hprFill');
   const mascotImg = document.getElementById('hprMascot');
-  if (!fillPath) return;
-  const total = fillPath.getTotalLength();
-  fillPath.style.strokeDasharray = total;
-  fillPath.style.strokeDashoffset = total - total * fraction;
-  if (mascotImg) {
-    const pt = fillPath.getPointAtLength(total * fraction);
-    const w = Number(mascotImg.getAttribute('width'));
-    const h = Number(mascotImg.getAttribute('height'));
-    mascotImg.setAttribute('x', pt.x - w / 2);
-    mascotImg.setAttribute('y', pt.y - h / 2);
-  }
+  if (fillEl) fillEl.style.height = `${filledPx}px`;
+  if (mascotImg) mascotImg.style.top = `${RAIL_TOP + filledPx}px`;
 }
 
 function buildTimelineItem(entry, isNext, today) {
@@ -694,13 +703,10 @@ function buildTimelineItem(entry, isNext, today) {
         <span class="timeline-dot"></span>
         <div class="hero-progress" id="weekProgress" role="progressbar" aria-label="Progress through the week to bin day" aria-valuemin="0" aria-valuemax="100">
           <div class="hero-progress-rail">
-            <svg viewBox="0 0 52 130" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path class="hpr-track" d="M26 10 C 8 35, 44 50, 26 70 C 8 90, 44 105, 26 122"/>
-              <path id="hprFill" class="hpr-fill" d="M26 10 C 8 35, 44 50, 26 70 C 8 90, 44 105, 26 122"/>
-              <circle class="hpr-enddot" cx="26" cy="122" r="7"/>
-              <image id="hprMascot" class="hpr-mascot" width="30" height="30" x="11" y="-5"
-                     href="characters/food-icon.png"/>
-            </svg>
+            <div class="hpr-track"></div>
+            <div class="hpr-fill" id="hprFill"></div>
+            <div class="hpr-enddot"></div>
+            <img id="hprMascot" class="hpr-mascot" src="characters/food-icon.png" alt="">
           </div>
           <div class="hero-progress-text">
             <div class="hero-clock" id="heroClock"></div>
@@ -755,7 +761,7 @@ function init() {
     `;
     const hprMascot = document.getElementById('hprMascot');
     if (hprMascot) {
-      hprMascot.setAttribute('href', mascotIconFor(next.recycling, next.black));
+      hprMascot.src = mascotIconFor(next.recycling, next.black);
     }
     mascotWrap.classList.toggle('celebrate', isToday);
     if (isToday) launchConfetti();
