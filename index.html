@@ -877,7 +877,7 @@ function renderTablePage(startDate) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const pageEnd = addMonths(startDate, PAGE_MONTHS);
-  const rows = generateSchedule(startDate, pageEnd);
+  const rows = generateSchedule(startDate, new Date(pageEnd.getTime() - MS_PER_DAY));
 
   const tbody = document.getElementById('tableBody');
   tbody.innerHTML = rows.map(row => {
