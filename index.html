@@ -414,6 +414,63 @@
   }
   .toggle-btn:active { transform: translateY(0) scale(0.97); }
 
+  .table-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .page-btn {
+    font-family: 'Nunito Sans', sans-serif;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: transform 0.15s ease, background 0.15s ease;
+  }
+  .page-btn:hover:not(:disabled) {
+    background: var(--brand);
+    color: var(--brand-contrast);
+    border-color: var(--brand);
+  }
+  .page-btn:active:not(:disabled) { transform: scale(0.97); }
+  .page-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+  .page-label {
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--subtitle);
+    text-align: center;
+    flex: 1;
+  }
+  .table-jump {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 0.85rem;
+    color: var(--subtitle);
+  }
+  .table-jump input[type="date"] {
+    font-family: 'Nunito Sans', sans-serif;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 5px 8px;
+    background: var(--card-bg);
+    color: var(--text);
+    font-size: 0.85rem;
+  }
+
   table {
     width: 100%;
     border-collapse: collapse;
@@ -529,6 +586,16 @@
 
 <button type="button" class="toggle-btn" onclick="toggleTable()">Show all dates ▾</button>
 <div id="tableWrap">
+  <div class="table-nav">
+    <button type="button" class="page-btn" id="pagePrevBtn" onclick="shiftTablePage(-1)" aria-label="Earlier dates">‹ Earlier</button>
+    <span class="page-label" id="pageLabel"></span>
+    <button type="button" class="page-btn" onclick="shiftTablePage(1)" aria-label="Later dates">Later ›</button>
+  </div>
+  <div class="table-jump">
+    <label for="jumpDateInput">Jump to date</label>
+    <input type="date" id="jumpDateInput">
+    <button type="button" class="page-btn" onclick="jumpToDate()">Go</button>
+  </div>
   <table>
     <thead>
       <tr><th>Date</th><th>Food</th><th>Recycling</th><th>Black bin</th></tr>
@@ -575,11 +642,11 @@ function generateSchedule(from, to) {
   return rows;
 }
 
-const SCHEDULE_WINDOW_START_DAYS = 14; // small buffer in case the page loaded just before a rollover
-const SCHEDULE_WINDOW_END_DAYS = 370; // just over a year ahead, always covers the next Christmas period
-const scheduleFrom = new Date(Date.now() - SCHEDULE_WINDOW_START_DAYS * MS_PER_DAY);
-const scheduleTo = new Date(Date.now() + SCHEDULE_WINDOW_END_DAYS * MS_PER_DAY);
-const data = generateSchedule(scheduleFrom, scheduleTo);
+function addMonths(d, months) {
+  const r = new Date(d);
+  r.setMonth(r.getMonth() + months);
+  return r;
+}
 
 function fmtDate(d) {
   return d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
@@ -758,14 +825,10 @@ function init() {
   const today = new Date();
   today.setHours(0,0,0,0);
 
-  const upcoming = [];
-  for (const row of data) {
-    const d = new Date(row[0] + 'T00:00:00');
-    if (d >= today) {
-      upcoming.push({ d, recycling: row[1], black: row[2], xmas: row[3] });
-      if (upcoming.length === 3) break;
-    }
-  }
+  // Two months is comfortably enough to always have the next 3 collections on hand.
+  const upcoming = generateSchedule(today, addMonths(today, 2))
+    .slice(0, 3)
+    .map(row => ({ d: new Date(row[0] + 'T00:00:00'), recycling: row[1], black: row[2], xmas: row[3] }));
 
   const card = document.getElementById('nextCard');
   const mascotWrap = document.getElementById('mascotWrap');
@@ -795,8 +858,29 @@ function init() {
 
   updateWeekProgress();
 
+  document.getElementById('jumpDateInput').min = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  tableMinStart = today;
+  renderTablePage(tablePageStart !== null ? tablePageStart : today);
+}
+
+// The table shows one rolling window at a time rather than the whole future —
+// pagination keeps the DOM small, and "Jump to date" generates whichever
+// window is needed on demand since the schedule itself has no fixed end.
+const PAGE_MONTHS = 3;
+let tablePageStart = null;
+let tableMinStart = null;
+
+function renderTablePage(startDate) {
+  if (tableMinStart && startDate < tableMinStart) startDate = new Date(tableMinStart);
+  tablePageStart = startDate;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const pageEnd = addMonths(startDate, PAGE_MONTHS);
+  const rows = generateSchedule(startDate, pageEnd);
+
   const tbody = document.getElementById('tableBody');
-  tbody.innerHTML = data.filter(row => new Date(row[0] + 'T00:00:00') >= today).map(row => {
+  tbody.innerHTML = rows.map(row => {
     const d = new Date(row[0] + 'T00:00:00');
     const isToday = d.getTime() === today.getTime();
     return `<tr class="${isToday ? 'today-row' : ''} ${row[3] ? 'orange-row' : ''}">
@@ -806,6 +890,24 @@ function init() {
       <td>${row[2] ? '<span class="bin-icon black"><img src="characters/black-icon.png" alt="Black bin"></span>' : ''}</td>
     </tr>`;
   }).join('');
+
+  document.getElementById('pageLabel').textContent =
+    `${fmtMonthYear(startDate)} – ${fmtMonthYear(pageEnd)}`;
+  document.getElementById('pagePrevBtn').disabled = tableMinStart && startDate.getTime() <= tableMinStart.getTime();
+}
+
+function shiftTablePage(direction) {
+  renderTablePage(addMonths(tablePageStart || tableMinStart || new Date(), direction * PAGE_MONTHS));
+}
+
+function jumpToDate() {
+  const input = document.getElementById('jumpDateInput');
+  if (!input.value) return;
+  renderTablePage(new Date(input.value + 'T00:00:00'));
+}
+
+function fmtMonthYear(d) {
+  return d.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' });
 }
 
 function launchConfetti() {
