@@ -538,22 +538,48 @@
 </div>
 
 <script>
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+// Collection is every Thursday; recycling & garden and the black bin follow a
+// repeating cycle relative to this confirmed collection date (week n = 0).
+// Verified against the council's published 2026-27 calendar: recycling falls
+// on odd weeks, the black bin every third week — and this holds even through
+// the Christmas period below, so the cycle keeps running indefinitely without
+// needing new dates typed in every year.
+const CYCLE_ANCHOR = new Date('2026-04-02T00:00:00');
+
+// The council still confirms the exact collection day for the Christmas/New
+// Year period each December, so these dates are flagged as provisional even
+// though they follow the normal cycle above. Update this set once a year —
+// remove past ones if you like, and add the next Dec/Jan batch once the
+// council publishes it.
+const XMAS_DATES = new Set([
+  '2026-12-24', '2026-12-31', '2027-01-07', '2027-01-14',
+]);
+
 // [date, recycling, black, isChristmasPeriod] — food waste is every date
-const data = [
-  ["2026-04-02",0,1,0],["2026-04-09",1,0,0],["2026-04-16",0,0,0],["2026-04-23",1,1,0],
-  ["2026-04-30",0,0,0],["2026-05-07",1,0,0],["2026-05-14",0,1,0],["2026-05-21",1,0,0],
-  ["2026-05-28",0,0,0],["2026-06-04",1,1,0],["2026-06-11",0,0,0],["2026-06-18",1,0,0],
-  ["2026-06-25",0,1,0],["2026-07-02",1,0,0],["2026-07-09",0,0,0],["2026-07-16",1,1,0],
-  ["2026-07-23",0,0,0],["2026-07-30",1,0,0],["2026-08-06",0,1,0],["2026-08-13",1,0,0],
-  ["2026-08-20",0,0,0],["2026-08-27",1,1,0],["2026-09-03",0,0,0],["2026-09-10",1,0,0],
-  ["2026-09-17",0,1,0],["2026-09-24",1,0,0],["2026-10-01",0,0,0],["2026-10-08",1,1,0],
-  ["2026-10-15",0,0,0],["2026-10-22",1,0,0],["2026-10-29",0,1,0],["2026-11-05",1,0,0],
-  ["2026-11-12",0,0,0],["2026-11-19",1,1,0],["2026-11-26",0,0,0],["2026-12-03",1,0,0],
-  ["2026-12-10",0,1,0],["2026-12-17",1,0,0],["2026-12-24",0,0,1],["2026-12-31",1,1,1],
-  ["2027-01-07",0,0,1],["2027-01-14",1,0,1],["2027-01-21",0,1,0],["2027-01-28",1,0,0],
-  ["2027-02-04",0,0,0],["2027-02-11",1,1,0],["2027-02-18",0,0,0],["2027-02-25",1,0,0],
-  ["2027-03-04",0,1,0],["2027-03-11",1,0,0],["2027-03-18",0,0,0],["2027-03-25",1,1,0]
-];
+function generateSchedule(from, to) {
+  const first = new Date(from);
+  first.setHours(0, 0, 0, 0);
+  const daysSinceAnchorDow = (first.getDay() - CYCLE_ANCHOR.getDay() + 7) % 7;
+  if (daysSinceAnchorDow > 0) first.setDate(first.getDate() + (7 - daysSinceAnchorDow));
+
+  const rows = [];
+  for (const d = new Date(first); d <= to; d.setDate(d.getDate() + 7)) {
+    const n = Math.round((d.getTime() - CYCLE_ANCHOR.getTime()) / (7 * MS_PER_DAY));
+    const recycling = ((n % 2) + 2) % 2 === 1 ? 1 : 0;
+    const black = ((n % 3) + 3) % 3 === 0 ? 1 : 0;
+    const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    rows.push([iso, recycling, black, XMAS_DATES.has(iso) ? 1 : 0]);
+  }
+  return rows;
+}
+
+const SCHEDULE_WINDOW_START_DAYS = 14; // small buffer in case the page loaded just before a rollover
+const SCHEDULE_WINDOW_END_DAYS = 370; // just over a year ahead, always covers the next Christmas period
+const scheduleFrom = new Date(Date.now() - SCHEDULE_WINDOW_START_DAYS * MS_PER_DAY);
+const scheduleTo = new Date(Date.now() + SCHEDULE_WINDOW_END_DAYS * MS_PER_DAY);
+const data = generateSchedule(scheduleFrom, scheduleTo);
 
 function fmtDate(d) {
   return d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
@@ -649,8 +675,6 @@ function nextCaption(days) {
   if (days === 1) return "Tomorrow · next up";
   return `In ${days} days · next up`;
 }
-
-const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
 // Collections are always Thursday, so treat Friday 00:00 as the start of a
 // fresh week-long countdown that fills up smoothly to 100% by the end of
@@ -766,7 +790,7 @@ function init() {
     mascotWrap.classList.toggle('celebrate', isToday);
     if (isToday) launchConfetti();
   } else {
-    card.innerHTML = '<div class="timeline-caption">No dates loaded</div><div class="timeline-date">Calendar ends 25 March 2027</div>';
+    card.innerHTML = '<div class="timeline-caption">No dates loaded</div>';
   }
 
   updateWeekProgress();

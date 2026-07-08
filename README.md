@@ -13,7 +13,6 @@ Installable as a PWA — works offline once added to your home screen.
 - `graphics/mascot-hero.png` — the full mascot illustration (with wordmark), used as the social share preview (`og:image`); the app icons are a cropped, full-bleed, text-free derivative of this same artwork
 - `fonts/` — two self-hosted variable fonts (OFL-licensed, see `fonts/OFL-Fredoka.txt` and `fonts/OFL-NunitoSans.txt`): Fredoka for the title/logo (the one thing meant to stand out most) and Nunito Sans for everything else; self-hosted rather than CDN-loaded so it still works offline
 - `characters/` — illustrated bin characters (food/recycling/black), each in two forms: a small flat `*-icon.png` used in the bin-tag pills and calendar chips, and a larger detailed `*-full.png` used for the header mascot
-- `bindicator-source.ts` — typed reference copy of the schedule data model; not compiled or used at runtime, kept in case this ever moves into a real build pipeline
 
 ## Character
 
@@ -39,7 +38,9 @@ Static hosting only — no backend. GitHub Pages: Settings → Pages → Deploy 
 
 ## Updating the schedule
 
-Collection dates are hardcoded in `index.html` (the `data` array) — there's no admin panel or dynamic fetch, which is a deliberate simplicity trade-off. When the council publishes changes (e.g. the still-provisional Christmas/New Year dates), update the array by hand and redeploy.
+The schedule isn't hardcoded — `index.html` generates it algorithmically from a repeating cycle (`generateSchedule()`, near the top of the `<script>`): collection is every Thursday, recycling & garden falls on odd weeks and the black bin every third week, relative to a confirmed anchor date (`CYCLE_ANCHOR`). This matches the council's published calendar and keeps running correctly forever — no yearly data entry needed for the regular cycle.
+
+The one thing that does need a yearly touch-up is `XMAS_DATES`: the council still confirms the exact Christmas/New Year collection days each December (they occasionally shift), so those dates are flagged with a "may shift" warning even though they follow the normal cycle. Each year once the council confirms, add that December/January's Thursdays to the `XMAS_DATES` set.
 
 ## Known limitations
 
