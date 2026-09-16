@@ -11,7 +11,7 @@ Installable as a PWA — works offline once added to your home screen.
 - `sw.js` — service worker, cache-first for the static shell so it works fully offline once installed
 - `icons/` — app icons (192px / 512px, plus maskable variants for Android adaptive icons), derived from the mascot artwork in `graphics/`
 - `graphics/mascot-hero.png` — the full mascot illustration (with wordmark), used as the social share preview (`og:image`); the app icons are a cropped, full-bleed, text-free derivative of this same artwork
-- `fonts/` — two self-hosted variable fonts (OFL-licensed, see `fonts/OFL-Baloo2.txt` and `fonts/OFL-NunitoSans.txt`): Baloo 2 for the title/logo (the one thing meant to stand out most) and Nunito Sans for everything else; self-hosted rather than CDN-loaded so it still works offline
+- `fonts/` — two self-hosted variable fonts (OFL-licensed, see `fonts/OFL-SpaceGrotesk.txt` and `fonts/OFL-NunitoSans.txt`): Space Grotesk for the title/logo (the one thing meant to stand out most) and Nunito Sans for everything else; self-hosted rather than CDN-loaded so it still works offline
 - `characters/` — illustrated bin characters (food/recycling/black), each in two forms: a small flat `*-icon.png` used in the bin-tag pills and calendar chips, and a larger detailed `*-full.png` used for the header mascot
 
 ## Character
