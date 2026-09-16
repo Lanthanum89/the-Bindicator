@@ -51,6 +51,10 @@
     --border: #eeeeee;
     --accent: var(--neutral);
     --accent-solid: var(--neutral);
+    --line: #1a1a1a;
+    --shadow: #1a1a1a;
+    --radius: 12px;
+    --mono: ui-monospace, "JetBrains Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -63,6 +67,8 @@
       --subtitle: #b6a9c4;
       --table-bg: #201929;
       --border: #3a3145;
+      --line: #f2eef7;
+      --shadow: #0d0912;
     }
   }
 
@@ -78,6 +84,8 @@
     --subtitle: #b6a9c4;
     --table-bg: #201929;
     --border: #3a3145;
+    --line: #f2eef7;
+    --shadow: #0d0912;
   }
   :root[data-theme="light"] {
     --brand: #374151;
@@ -88,6 +96,8 @@
     --subtitle: #666666;
     --table-bg: #ffffff;
     --border: #eeeeee;
+    --line: #1a1a1a;
+    --shadow: #1a1a1a;
   }
 
   * { box-sizing: border-box; }
@@ -95,31 +105,17 @@
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     font-size: 17px;
-    background: var(--bg);
+    background:
+      linear-gradient(rgba(107, 45, 140, 0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(107, 45, 140, 0.08) 1px, transparent 1px),
+      var(--bg);
+    background-size: 26px 26px;
     margin: 0;
     padding: 16px;
     color: var(--text);
     position: relative;
     overflow-x: hidden;
-    transition: background 0.3s ease, color 0.3s ease;
-  }
-
-  body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    background:
-      radial-gradient(circle at 15% 20%, rgba(107, 45, 140, 0.16), transparent 40%),
-      radial-gradient(circle at 85% 15%, rgba(124, 179, 66, 0.16), transparent 42%),
-      radial-gradient(circle at 50% 95%, rgba(232, 114, 12, 0.12), transparent 45%);
-    background-size: 180% 180%;
-    animation: drift 24s ease-in-out infinite alternate;
-  }
-
-  @keyframes drift {
-    0%   { background-position: 0% 0%, 100% 0%, 50% 100%; }
-    100% { background-position: 25% 30%, 70% 50%, 65% 75%; }
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
   .header-row {
@@ -134,14 +130,15 @@
     flex-shrink: 0;
     width: 40px;
     height: 40px;
-    border-radius: 50%;
-    border: 1px solid var(--border);
+    border-radius: 10px;
+    border: 2px solid var(--line);
     background: var(--card-bg);
+    box-shadow: 3px 3px 0 var(--shadow);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: transform 0.15s ease, background 0.3s ease;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.3s ease;
   }
   .theme-toggle svg {
     width: 20px;
@@ -153,16 +150,35 @@
     stroke-linejoin: round;
   }
   .theme-toggle:hover {
-    transform: scale(1.08);
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0 var(--shadow);
   }
   .theme-toggle:active {
-    transform: scale(0.95);
+    transform: translate(0, 0);
+    box-shadow: 1px 1px 0 var(--shadow);
+  }
+
+  .title-block {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--purple);
+    margin: 0;
   }
 
   h1 {
     font-family: 'Fredoka', -apple-system, sans-serif;
     font-weight: 700;
     font-size: 2rem;
+    letter-spacing: -0.02em;
     margin: 0;
     color: var(--brand);
     cursor: pointer;
@@ -199,16 +215,18 @@
 
   .next-card {
     background: var(--card-bg);
-    border-radius: 12px;
+    border: 2px solid var(--line);
+    border-radius: var(--radius);
     padding: 18px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    box-shadow: 4px 4px 0 var(--shadow);
     margin-bottom: 20px;
     overflow: hidden;
-    transition: background 0.3s ease;
+    transition: background 0.3s ease, border-color 0.3s ease;
   }
   .accent-bar {
-    height: 6px;
+    height: 8px;
     margin: -18px -18px 14px;
+    border-bottom: 2px solid var(--line);
     background: var(--accent);
     transition: background 0.3s ease;
   }
@@ -242,6 +260,7 @@
     width: 10px;
     height: 10px;
     border-radius: 50%;
+    border: 1.5px solid var(--line);
     background: var(--border);
   }
   .timeline-item.is-next .timeline-dot {
@@ -249,8 +268,9 @@
     height: 16px;
     left: -24px;
     top: 2px;
+    border: 2px solid var(--line);
     background: var(--accent-solid);
-    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent-solid) 20%, transparent);
+    box-shadow: 2px 2px 0 var(--shadow);
   }
   .hero-progress {
     display: flex;
@@ -289,8 +309,9 @@
     width: 16px;
     height: 16px;
     border-radius: 50%;
+    border: 2px solid var(--line);
     background: var(--accent-solid);
-    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent-solid) 20%, transparent);
+    box-shadow: 2px 2px 0 var(--shadow);
     transform: translate(-50%, -50%);
     transition: background 0.3s ease;
   }
@@ -313,8 +334,10 @@
     gap: 2px;
   }
   .hero-clock {
-    font-family: 'Nunito Sans', sans-serif;
-    font-size: 0.9rem;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
     color: var(--subtitle);
     margin-bottom: 4px;
   }
@@ -333,9 +356,9 @@
     font-weight: 500;
   }
   .timeline-caption {
-    font-family: 'Nunito Sans', sans-serif;
-    font-size: 0.8rem;
-    font-weight: 600;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: #888;
@@ -357,7 +380,9 @@
     align-items: center;
     gap: 6px;
     padding: 6px 14px;
+    border: 2px solid var(--line);
     border-radius: 20px;
+    box-shadow: 2px 2px 0 var(--shadow);
     font-size: 0.95rem;
     font-weight: 600;
     color: white;
@@ -382,9 +407,11 @@
     flex-wrap: wrap;
     gap: 14px;
     margin-bottom: 12px;
-    font-family: 'Nunito Sans', sans-serif;
-    font-size: 0.82rem;
-    font-weight: 600;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
     color: var(--subtitle);
   }
   .icon-key-item {
@@ -398,24 +425,29 @@
     object-fit: contain;
   }
   .toggle-btn {
-    font-family: 'Nunito Sans', sans-serif;
-    background: none;
-    border: 1px solid var(--brand);
+    font-family: var(--mono);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    background: var(--card-bg);
+    border: 2px solid var(--line);
     color: var(--brand);
-    padding: 7px 14px;
+    padding: 8px 14px;
     border-radius: 8px;
-    font-size: 0.85rem;
+    box-shadow: 3px 3px 0 var(--shadow);
+    font-size: 0.78rem;
     font-weight: 700;
     cursor: pointer;
     margin-bottom: 12px;
-    transition: transform 0.15s ease, background 0.15s ease;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
   }
   .toggle-btn:hover {
-    background: var(--brand);
-    color: var(--brand-contrast);
-    transform: translateY(-1px);
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0 var(--shadow);
   }
-  .toggle-btn:active { transform: translateY(0) scale(0.97); }
+  .toggle-btn:active {
+    transform: translate(0, 0);
+    box-shadow: 1px 1px 0 var(--shadow);
+  }
 
   .table-nav {
     display: flex;
@@ -425,32 +457,40 @@
     margin-bottom: 10px;
   }
   .page-btn {
-    font-family: 'Nunito Sans', sans-serif;
-    background: none;
-    border: 1px solid var(--border);
+    font-family: var(--mono);
+    background: var(--card-bg);
+    border: 2px solid var(--line);
     color: var(--text);
     padding: 6px 10px;
     border-radius: 8px;
-    font-size: 0.82rem;
-    font-weight: 600;
+    box-shadow: 2px 2px 0 var(--shadow);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
     cursor: pointer;
     white-space: nowrap;
-    transition: transform 0.15s ease, background 0.15s ease;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
   }
   .page-btn:hover:not(:disabled) {
-    background: var(--brand);
-    color: var(--brand-contrast);
-    border-color: var(--brand);
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0 var(--shadow);
   }
-  .page-btn:active:not(:disabled) { transform: scale(0.97); }
+  .page-btn:active:not(:disabled) {
+    transform: translate(0, 0);
+    box-shadow: 1px 1px 0 var(--shadow);
+  }
   .page-btn:disabled {
     opacity: 0.4;
     cursor: default;
+    box-shadow: none;
   }
   .page-label {
-    font-family: 'Nunito Sans', sans-serif;
-    font-size: 0.85rem;
+    font-family: var(--mono);
+    font-size: 0.78rem;
     font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
     color: var(--subtitle);
     text-align: center;
     flex: 1;
@@ -460,39 +500,45 @@
     align-items: center;
     gap: 8px;
     margin-bottom: 12px;
-    font-family: 'Nunito Sans', sans-serif;
-    font-size: 0.85rem;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
     color: var(--subtitle);
   }
   .table-jump input[type="date"] {
-    font-family: 'Nunito Sans', sans-serif;
-    border: 1px solid var(--border);
+    font-family: var(--mono);
+    border: 2px solid var(--line);
     border-radius: 8px;
     padding: 5px 8px;
     background: var(--card-bg);
     color: var(--text);
-    font-size: 0.85rem;
+    font-size: 0.82rem;
   }
 
   table {
     width: 100%;
     border-collapse: collapse;
     background: var(--table-bg);
-    border-radius: 8px;
+    border: 2px solid var(--line);
+    border-radius: var(--radius);
     overflow: hidden;
     font-size: 0.95rem;
   }
   th, td {
     padding: 7px 6px;
     text-align: center;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1.5px solid var(--border);
     color: var(--text);
   }
   th {
-    font-family: 'Nunito Sans', sans-serif;
+    font-family: var(--mono);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
     background: color-mix(in srgb, var(--brand) 80%, var(--purple) 20%);
     color: var(--brand-contrast);
-    font-size: 0.82rem;
+    font-size: 0.72rem;
+    border-bottom: 2px solid var(--line);
   }
   td:first-child, th:first-child {
     text-align: left;
@@ -534,10 +580,14 @@
   }
 
   .today-banner {
-    font-family: 'Nunito Sans', sans-serif;
+    font-family: var(--mono);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
     background: var(--orange);
+    border: 2px solid var(--line);
+    box-shadow: 3px 3px 0 var(--shadow);
     color: white;
-    font-weight: 600;
+    font-weight: 700;
     text-align: center;
     padding: 8px;
     border-radius: 8px;
@@ -572,7 +622,10 @@
   <div class="mascot-wrap" id="mascotWrap" role="button" tabindex="0" aria-label="Boop the bin">
     <img id="mascotImg" src="characters/food-full.png" alt="">
   </div>
-  <h1 id="titleEl" role="button" tabindex="0" aria-label="The Bindicator (wobble it)">The Bindicator</h1>
+  <div class="title-block">
+    <p class="eyebrow">West Berkshire · Schedule 1</p>
+    <h1 id="titleEl" role="button" tabindex="0" aria-label="The Bindicator (wobble it)">The Bindicator</h1>
+  </div>
   <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light mode" title="Toggle dark/light mode">
     <svg id="themeToggleIcon" viewBox="0 0 24 24" aria-hidden="true"></svg>
   </button>
